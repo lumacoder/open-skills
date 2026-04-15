@@ -2,7 +2,7 @@ import * as path from 'node:path';
 import { pathExists as pathExistsFn, readFile, ensureDir, writeFile } from '../../core/fs-utils.js';
 import { BaseAdapter } from './base-adapter.js';
 import type { InstallScope, SkillMeta, InstallResult } from '../../types/index.js';
-import { createFileMarker, createSourceMarker, createRuleMarker } from '../marker-system.js';
+import { createFileMarker, createSourceMarker, createRuleMarker, parseExistingFile } from '../marker-system.js';
 
 export class CursorAdapter extends BaseAdapter {
   generateHeaderContent(skills: SkillMeta[]): string {
@@ -98,6 +98,6 @@ export class CursorAdapter extends BaseAdapter {
   private async loadExistingBlocks(targetPath: string) {
     if (!(await pathExistsFn(targetPath))) return [];
     const content = await readFile(targetPath, 'utf-8');
-    return [];
+    return parseExistingFile(content);
   }
 }
