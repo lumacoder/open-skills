@@ -43,7 +43,7 @@ open-skills --editor claude-code,cursor --scope global --category frontend
 # 交互式创建
 open-skills create
 
-# 快速创建（指定所有字段）
+# 非交互式（CI/脚本友好）
 open-skills create my-awesome-skill \
   --category frontend \
   --display-name "My Awesome Skill" \
@@ -55,23 +55,145 @@ open-skills create my-awesome-skill \
 - `bundles/{category}/{name}/SKILL.md` — 脚手架内容
 - `registry/{name}.yaml` — 自动注册的元数据
 
-## 开发者模式
+## 本地开发与管理 Skill 数据源
 
-通过 `open-skills --dev` 或设置环境变量 `OPEN_SKILLS_DEV=1` 启动开发者面板：
+### 环境准备
 
 ```bash
-open-skills --dev
+git clone <repo> && cd open-skills
+npm install
+npm run build          # 构建 dist/
 ```
 
-面板功能：
-- 查看 Registry 状态（分类、skill 数量、数据源类型）
-- 创建新 Skill（生成 bundle + registry YAML）
-- 扫描并自动注册 Bundles（将 bundles/ 下新目录自动生成 registry YAML）
-- 校验 Registry 完整性
+开发时可以直接用 `npm run dev` 代替 `node dist/cli.js`。
 
-### 发布前自动检测
+### 创建新 Skill
 
-`npm run validate-registry` 会先自动扫描 bundles/ 目录，将未\u6ce8册的 skill \u81ea动\u751f\u6210 YAML，\u518d\u8fdb\u884c\u6821\u9a8c\u3002
+#### 方式 A：开发者面板（推荐）
+```bash
+npm run dev -- --dev
+# 或
+node dist/cli.js --dev
+```
+
+在面板中选择 **➕ 创建新 Skill**，交互式填写名称、分类、描述，即可自动生成 bundle 和 registry YAML。
+
+#### 方式 B：命令行快速创建
+见上文「快速创建 Skill」。
+
+### 开发 Skill 内容
+
+创建后直接编辑 bundle 下的 `SKILL.md`：
+
+```bash
+code bundles/frontend/my-awesome-skill/SKILL.md
+```
+
+一个标准的 `SKILL.md` 结构示例：
+
+```markdown
+---
+name: my-awesome-skill
+display_name: "My Awesome Skill"
+description: "What this skill does"
+version: "1.0.0"
+author: your-name
+---
+
+# My Awesome Skill
+
+## 规则
+
+1. ...
+2. ...
+```
+
+> **注意**：对于非 git 来源的 skill（本地开发），`bundle.path` 指向的就是这个目录。
+
+### 管理 Skill 数据源
+
+#### 本地 Bundle（非 git 库）
+如果你开发的 skill 不打算放在远程 git 仓库，直接放在 `bundles/` 下即可：
+
+```bash
+# 进入开发者面板扫描自动注册
+node dist/cli.js --dev
+# → 选择 "扫描并自动注册 Bundles"
+```
+
+或在命令行直接扫描并校验：
+```bash
+npm run validate-registry    # 会先自动扫描注册，再校验
+```
+
+#### 远程 Git 来源
+如果 skill 来自远程仓库，在 `registry/{name}.yaml` 中配置 `source`：
+
+```yaml
+name: react-best-practices
+display_name: "React Best Practices"
+category: frontend
+source:
+  type: git
+  url: https://github.com/vercel-labs/agent-skills.git
+  path: skills/react-best-practices    # 仓库内子路径（可选）
+  ref: main
+```
+
+同步到本地 bundle：
+```bash
+node dist/cli.js sync --category frontend --name react-best-practices
+```
+
+### 验证与测试
+
+```bash
+# 校验所有 registry YAML 格式和必填字段
+npm run validate-registry
+
+# 测试安装到本地
+node dist/cli.js --editor claude-code --scope local --category frontend
+
+# 查看 registry 状态
+node dist/cli.js list
+node dist/cli.js search my-awesome-skill
+```
+
+### 发布前检查清单
+
+```bash
+npm run prepublishOnly    # lint + build + validate-registry
+```
+
+这条命令会：
+1. 运行 TypeScript 类型检查
+2. 构建 `dist/`
+3. 自动扫描 `bundles/` 补全未注册的 skill
+4. 校验所有 registry YAML 的完整性
+
+### 完整开发流程示例
+
+```bash
+# Step 1: 创建
+node dist/cli.js create docker-best-practices \
+  --category devops \
+  --display-name "Docker Best Practices" \
+  --description "Dockerfile and compose guidelines"
+
+# Step 2: 开发
+code bundles/devops/docker-best-practices/SKILL.md
+
+# Step 3: 自动注册 + 校验
+npm run validate-registry
+
+# Step 4: 本地安装测试
+node dist/cli.js --editor claude-code --scope local --category devops
+
+# Step 5: 提交
+npm add -A && git commit -m "feat: add docker-best-practices skill"
+```
+
+## 支持的目标编辑器
 
 - Claude Code (`~/.claude/skills/`)
 - Hermes (`~/.hermes/skills/`)
