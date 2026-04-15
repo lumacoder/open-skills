@@ -47,6 +47,7 @@ open-skills --editor claude-code,cursor --scope global --category frontend
 - Antigravity (`.antigravityrules`)
 - GitHub Copilot (`.github/skills/`)
 
+> **注意：** 对于 directory 模式的编辑器（如 Claude Code），`update` 和 `install` 会清理目标目录中不在当前安装清单内的文件。请勿在这些目录中存放手动文件。
 ## 目录结构
 
 ```
