@@ -32,70 +32,97 @@ function parseArgs(args: string[]): InstallArgs {
   return result;
 }
 
+const STEP_EDITOR = 0;
+const STEP_SCOPE = 1;
+const STEP_CATEGORY = 2;
+const STEP_SKILL = 3;
+const STEP_CONFIRM = 4;
+const STEP_INSTALL = 5;
+
 export async function installCommand(args: string[] = []) {
   const parsed = parseArgs(args);
   const registry = await loadRegistry();
 
-  let selectedEditors: EditorPreset[];
-  if (parsed.editors) {
-    selectedEditors = editorPresets.filter((p) => parsed.editors!.includes(p.id));
-    if (selectedEditors.length === 0) {
-      console.log('未找到指定的编辑器');
-      process.exit(1);
-    }
-  } else {
-    selectedEditors = await promptEditor(editorPresets.filter((p) => p.defaultEnabled));
-    if (selectedEditors.length === 0) {
-      console.log('未选择编辑器，已取消');
-      process.exit(0);
-    }
-  }
+  let step = parsed.editors
+    ? parsed.scope
+      ? parsed.category
+        ? STEP_SKILL
+        : STEP_CATEGORY
+      : STEP_SCOPE
+    : STEP_EDITOR;
 
-  const scope = parsed.scope || (await promptScope());
-
-  let category: CategoryGroup | null = null;
-  if (parsed.category) {
-    category = registry.find((g) => g.id === parsed.category) || null;
-    if (!category) {
-      console.log('未找到指定的分类');
-      process.exit(1);
-    }
-  }
-
-  while (!category) {
-    category = await promptCategory(registry);
-    if (!category) break;
-  }
-
-  if (!category) {
-    console.log('已取消');
-    process.exit(0);
-  }
-
+  let selectedEditors: EditorPreset[] = parsed.editors
+    ? editorPresets.filter((p) => parsed.editors!.includes(p.id))
+    : [];
+  let scope: InstallScope | null = parsed.scope || null;
+  let category: CategoryGroup | null = parsed.category
+    ? registry.find((g) => g.id === parsed.category) || null
+    : null;
   let selectedSkills: SkillMeta[] = [];
-  while (selectedSkills.length === 0) {
-    selectedSkills = await promptSkills(category.displayName, category.skills);
-    if (selectedSkills.length === 0) {
-      console.log('未选择任何 skill，返回重选...');
-    }
+
+  if (parsed.editors && selectedEditors.length === 0) {
+    console.log('未找到指定的编辑器');
+    process.exit(1);
+  }
+  if (parsed.category && !category) {
+    console.log('未找到指定的分类');
+    process.exit(1);
   }
 
-  const confirm = await promptConfirm(selectedEditors, scope, selectedSkills);
-  if (confirm === null) {
-    console.log('已取消');
-    process.exit(0);
-  }
-  if (confirm === false) {
-    // Back to skill selection
-    selectedSkills = await promptSkills(category.displayName, category.skills);
-    if (selectedSkills.length === 0) {
-      console.log('未选择任何 skill，已取消');
-      process.exit(0);
+  while (step <= STEP_CONFIRM) {
+    if (step === STEP_EDITOR) {
+      selectedEditors = await promptEditor(editorPresets.filter((p) => p.defaultEnabled));
+      if (selectedEditors.length === 0) {
+        console.log('未选择编辑器，已取消');
+        process.exit(0);
+      }
+      step = STEP_SCOPE;
+      continue;
     }
-    const confirm2 = await promptConfirm(selectedEditors, scope, selectedSkills);
-    if (confirm2 !== true) {
-      console.log('已取消');
-      process.exit(0);
+
+    if (step === STEP_SCOPE) {
+      scope = await promptScope();
+      step = STEP_CATEGORY;
+      continue;
+    }
+
+    if (step === STEP_CATEGORY) {
+      const catResult = await promptCategory(registry);
+      if (catResult === '__back__') {
+        step = STEP_SCOPE;
+        continue;
+      }
+      if (!catResult) {
+        console.log('已取消');
+        process.exit(0);
+      }
+      category = catResult;
+      step = STEP_SKILL;
+      continue;
+    }
+
+    if (step === STEP_SKILL && category) {
+      selectedSkills = await promptSkills(category.displayName, category.skills);
+      if (selectedSkills.length === 0) {
+        console.log('未选择任何 skill，返回重选...');
+        continue;
+      }
+      step = STEP_CONFIRM;
+      continue;
+    }
+
+    if (step === STEP_CONFIRM) {
+      const confirm = await promptConfirm(selectedEditors, scope!, selectedSkills);
+      if (confirm === null) {
+        console.log('已取消');
+        process.exit(0);
+      }
+      if (confirm === false) {
+        step = STEP_SKILL;
+        continue;
+      }
+      step = STEP_INSTALL;
+      break;
     }
   }
 
@@ -105,7 +132,7 @@ export async function installCommand(args: string[] = []) {
 
   for (const preset of selectedEditors) {
     const adapter = createAdapter(preset);
-    const res = await engine.process(adapter, scope, selectedSkills);
+    const res = await engine.process(adapter, scope!, selectedSkills);
     results.push(...res);
   }
 
