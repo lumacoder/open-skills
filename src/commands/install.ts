@@ -81,7 +81,12 @@ export async function installCommand(args: string[] = []) {
     }
 
     if (step === STEP_SCOPE) {
-      scope = await promptScope();
+      const scopeResult = await promptScope();
+      if (scopeResult === '__back__') {
+        step = STEP_EDITOR;
+        continue;
+      }
+      scope = scopeResult;
       step = STEP_CATEGORY;
       continue;
     }
