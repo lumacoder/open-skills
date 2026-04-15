@@ -5,6 +5,8 @@ import { HermesAdapter } from './hermes-adapter.js';
 import { CursorAdapter } from './cursor-adapter.js';
 import { WindsurfAdapter } from './windsurf-adapter.js';
 import { ClineAdapter } from './cline-adapter.js';
+import { RooClineAdapter } from './roo-cline-adapter.js';
+import { AntigravityAdapter } from './antigravity-adapter.js';
 
 export function createAdapter(preset: EditorPreset): BaseAdapter {
   switch (preset.id) {
@@ -17,8 +19,13 @@ export function createAdapter(preset: EditorPreset): BaseAdapter {
     case 'windsurf':
       return new WindsurfAdapter(preset);
     case 'cline':
-      // Cline uses same format as Cursor for MVP
-      return new CursorAdapter(preset);
+      return new ClineAdapter(preset);
+    case 'cursor-skills':
+      return new ClaudeAdapter(preset);
+    case 'roo-cline':
+      return new RooClineAdapter(preset);
+    case 'antigravity':
+      return new AntigravityAdapter(preset);
     case 'github-copilot':
       return new ClaudeAdapter(preset);
     default:
@@ -31,3 +38,6 @@ export * from './claude-adapter.js';
 export * from './hermes-adapter.js';
 export * from './cursor-adapter.js';
 export * from './windsurf-adapter.js';
+export * from './cline-adapter.js';
+export * from './roo-cline-adapter.js';
+export * from './antigravity-adapter.js';
