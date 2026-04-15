@@ -58,10 +58,10 @@ export const editorPresets = [
   {
     id: 'antigravity',
     name: 'Antigravity',
-    filePath: '.antigravityrules',
-    type: 'file' as const,
+    filePath: '.agents/skills',
+    type: 'directory' as const,
     defaultEnabled: true,
-    isSkillType: false,
+    isSkillType: true,
   },
   {
     id: 'github-copilot',
