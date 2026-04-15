@@ -6,4 +6,15 @@ dist/
 .env.local
 coverage/
 *.tgz
-docs/
+
+# Editor skill outputs (local testing)
+.claude/
+.hermes/
+.cursor/
+.cursorrules
+.windsurfrules
+.clinerules
+.roorules
+.antigravityrules
+.github/skills/
+.skills/
