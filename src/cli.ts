@@ -7,11 +7,18 @@ import { syncCommand } from './commands/sync.js';
 import { updateCommand } from './commands/update.js';
 import { exportCommand } from './commands/export.js';
 import { importCommand } from './commands/import.js';
+import { devPanelCommand } from './commands/dev-panel.js';
+import { createCommand } from './commands/create.js';
 
 const args = process.argv.slice(2);
 const command = args[0];
 
 async function main() {
+  if (args.includes('--dev') || process.env.OPEN_SKILLS_DEV === '1') {
+    await devPanelCommand();
+    return;
+  }
+
   switch (command) {
     case 'list':
       await listCommand();
@@ -33,6 +40,9 @@ async function main() {
       break;
     case 'import':
       await importCommand(args[1] || 'stack.yaml');
+      break;
+    case 'create':
+      await createCommand(args.slice(1));
       break;
     default:
       await installCommand(args);

@@ -34,8 +34,44 @@ open-skills --editor claude-code,cursor --scope global --category frontend
 | `open-skills update` | 检测并更新已安装的 skills |
 | `open-skills export <file>` | 导出当前 stack |
 | `open-skills import <file>` | 导入 stack 一键安装 |
+| `open-skills create <name> --category <cat>` | 创建本地 Skill 脚手架（dev 模式常用） |
+| `open-skills --dev` | 启动开发者管理面板 |
 
-## 支持的目标编辑器
+## 快速创建 Skill
+
+```bash
+# 交互式创建
+open-skills create
+
+# 快速创建（指定所有字段）
+open-skills create my-awesome-skill \
+  --category frontend \
+  --display-name "My Awesome Skill" \
+  --description "What this skill does" \
+  --author "your-name"
+```
+
+创建后会自动生成：
+- `bundles/{category}/{name}/SKILL.md` — 脚手架内容
+- `registry/{name}.yaml` — 自动注册的元数据
+
+## 开发者模式
+
+通过 `open-skills --dev` 或设置环境变量 `OPEN_SKILLS_DEV=1` 启动开发者面板：
+
+```bash
+open-skills --dev
+```
+
+面板功能：
+- 查看 Registry 状态（分类、skill 数量、数据源类型）
+- 创建新 Skill（生成 bundle + registry YAML）
+- 扫描并自动注册 Bundles（将 bundles/ 下新目录自动生成 registry YAML）
+- 校验 Registry 完整性
+
+### 发布前自动检测
+
+`npm run validate-registry` 会先自动扫描 bundles/ 目录，将未\u6ce8册的 skill \u81ea动\u751f\u6210 YAML，\u518d\u8fdb\u884c\u6821\u9a8c\u3002
 
 - Claude Code (`~/.claude/skills/`)
 - Hermes (`~/.hermes/skills/`)
