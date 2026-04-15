@@ -1,14 +1,15 @@
 {
   "name": "open-skills",
-  "version": "1.0.0",
-  "description": "AI Agent Skill 聚合与一键安装 CLI 工具",
+  "version": "2.0.0",
+  "description": "AI Agent Skill 分发与一键安装 CLI 工具",
   "main": "dist/cli.js",
   "bin": {
-    "open-skills": "dist/cli.mjs"
+    "open-skills": "dist/cli.js"
   },
   "scripts": {
     "build": "tsup",
     "dev": "tsx src/cli.ts",
+    "lint": "tsc --noEmit",
     "test": "vitest"
   },
   "keywords": [
@@ -23,14 +24,7 @@
   "license": "MIT",
   "dependencies": {
     "@inquirer/prompts": "^7.10.1",
-    "chalk": "^5.4.1",
-    "enquirer": "^2.4.1",
     "fs-extra": "^11.3.0",
-    "ink": "^7.0.0",
-    "ink-multi-select": "^2.0.0",
-    "ink-select-input": "^6.2.0",
-    "ora": "^8.2.0",
-    "react": "^19.2.5",
     "simple-git": "^3.27.0",
     "yaml": "^2.7.1",
     "zod": "^3.24.2"
@@ -38,7 +32,6 @@
   "devDependencies": {
     "@types/fs-extra": "^11.0.4",
     "@types/node": "^22.14.1",
-    "@types/react": "^18.3.28",
     "tsup": "^8.4.0",
     "tsx": "^4.19.3",
     "typescript": "^5.8.3",
