@@ -59,7 +59,7 @@ export async function loadRegistry(): Promise<CategoryGroup[]> {
   }
 
   // Append any skills with uncategorized categories at the end
-  for (const [catId, skills] of skillsByCategory) {
+  for (const [catId, skills] of Array.from(skillsByCategory)) {
     if (!categoryMap.has(catId)) {
       groups.push({
         id: catId,

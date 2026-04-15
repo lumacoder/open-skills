@@ -4,8 +4,9 @@ import { editorPresets } from '../core/presets/editors.js';
 import { loadRegistry } from '../core/registry.js';
 import { Engine } from '../core/engine.js';
 import { createAdapter } from '../core/adapters/index.js';
-import { pathExists, readdir } from '../core/fs-utils.js';
+import { pathExists, readdir, readFile } from '../core/fs-utils.js';
 import { InstallScope, SkillMeta } from '../types/index.js';
+import { parseExistingFile } from '../core/marker-system.js';
 
 async function detectInstalledSkills(targetPath: string): Promise<Set<string>> {
   if (!(await pathExists(targetPath))) return new Set();
@@ -17,10 +18,12 @@ async function detectInstalledSkills(targetPath: string): Promise<Set<string>> {
   return names;
 }
 
-function readSingleFileSkills(filePath: string): Set<string> {
-  return new Set();
+async function readSingleFileSkills(filePath: string): Promise<Set<string>> {
+  if (!(await pathExists(filePath))) return new Set();
+  const content = await readFile(filePath, 'utf-8');
+  const blocks = parseExistingFile(content);
+  return new Set(blocks.map((b) => b.source).filter((s): s is string => !!s));
 }
-
 export async function updateCommand() {
   const registry = await loadRegistry();
   const allSkills = registry.flatMap((g) => g.skills);
@@ -37,7 +40,7 @@ export async function updateCommand() {
       if (preset.type === 'directory') {
         installedNames = await detectInstalledSkills(targetPath);
       } else {
-        installedNames = readSingleFileSkills(targetPath);
+        installedNames = await readSingleFileSkills(targetPath);
       }
 
       const toUpdate: SkillMeta[] = [];
