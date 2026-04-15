@@ -1,0 +1,149 @@
+{
+  "version": "3.0.0",
+  "updatedAt": "2026-04-15T10:27:30.920Z",
+  "categories": [
+    {
+      "id": "frontend",
+      "displayName": "前端开发",
+      "order": 1
+    },
+    {
+      "id": "backend",
+      "displayName": "后端开发",
+      "order": 2
+    },
+    {
+      "id": "devops",
+      "displayName": "运维 / DevOps",
+      "order": 3
+    },
+    {
+      "id": "product",
+      "displayName": "产品设计",
+      "order": 4
+    },
+    {
+      "id": "ui-ux",
+      "displayName": "UI / UX",
+      "order": 5
+    },
+    {
+      "id": "testing",
+      "displayName": "测试",
+      "order": 6
+    },
+    {
+      "id": "data-science",
+      "displayName": "数据科学",
+      "order": 7
+    },
+    {
+      "id": "fullstack",
+      "displayName": "全栈通用",
+      "order": 8
+    }
+  ],
+  "skills": [
+    {
+      "name": "docker-basics",
+      "displayName": "Docker Basics",
+      "description": "Docker 容器化部署与最佳实践",
+      "category": "devops",
+      "tags": [
+        "docker",
+        "devops",
+        "container"
+      ],
+      "origin": {
+        "type": "git",
+        "path": "bundles/devops/docker-basics",
+        "url": "https://github.com/lumacoder/open-skills.git",
+        "refName": "main"
+      },
+      "author": "lumacoder",
+      "version": "1.0.0",
+      "license": "MIT"
+    },
+    {
+      "name": "node-api-design",
+      "displayName": "Node.js API Design",
+      "description": "Node.js RESTful API 设计与实现最佳实践",
+      "category": "backend",
+      "tags": [
+        "nodejs",
+        "api",
+        "backend"
+      ],
+      "origin": {
+        "type": "git",
+        "path": "bundles/backend/node-api-design",
+        "url": "https://github.com/lumacoder/open-skills.git",
+        "refName": "main"
+      },
+      "author": "lumacoder",
+      "version": "1.0.0",
+      "license": "MIT"
+    },
+    {
+      "name": "react-best-practices",
+      "displayName": "React Best Practices",
+      "description": "React & Next.js 性能优化与工程实践指南",
+      "category": "frontend",
+      "tags": [
+        "react",
+        "nextjs",
+        "frontend",
+        "performance"
+      ],
+      "origin": {
+        "type": "git",
+        "path": "skills/react-best-practices",
+        "url": "https://github.com/vercel-labs/agent-skills.git",
+        "refName": "main"
+      },
+      "author": "Vercel Labs",
+      "version": "2.1.0",
+      "license": "MIT"
+    },
+    {
+      "name": "typescript-patterns",
+      "displayName": "TypeScript Patterns",
+      "description": "TypeScript 设计模式与类型技巧",
+      "category": "frontend",
+      "tags": [
+        "typescript",
+        "frontend",
+        "patterns"
+      ],
+      "origin": {
+        "type": "git",
+        "path": "bundles/frontend/typescript-patterns",
+        "url": "https://github.com/lumacoder/open-skills.git",
+        "refName": "main"
+      },
+      "author": "lumacoder",
+      "version": "1.0.0",
+      "license": "MIT"
+    },
+    {
+      "name": "web-security",
+      "displayName": "Web Security",
+      "description": "Web 应用安全开发指南",
+      "category": "fullstack",
+      "tags": [
+        "security",
+        "fullstack",
+        "web"
+      ],
+      "origin": {
+        "type": "git",
+        "path": "bundles/fullstack/web-security",
+        "url": "https://github.com/lumacoder/open-skills.git",
+        "refName": "main"
+      },
+      "author": "lumacoder",
+      "version": "1.0.0",
+      "license": "MIT"
+    }
+  ]
+}

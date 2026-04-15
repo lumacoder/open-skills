@@ -9,13 +9,15 @@ import { exportCommand } from './commands/export.js';
 import { importCommand } from './commands/import.js';
 import { devPanelCommand } from './commands/dev-panel.js';
 import { createCommand } from './commands/create.js';
+import { migrateCommand } from './commands/migrate.js';
+import { startDevServer } from './dev-server/server.js';
 
 const args = process.argv.slice(2);
 const command = args[0];
 
 async function main() {
   if (args.includes('--dev') || process.env.OPEN_SKILLS_DEV === '1') {
-    await devPanelCommand();
+    await startDevServer(3890);
     return;
   }
 
@@ -43,6 +45,9 @@ async function main() {
       break;
     case 'create':
       await createCommand(args.slice(1));
+      break;
+    case 'migrate':
+      await migrateCommand();
       break;
     default:
       await installCommand(args);

@@ -1,15 +1,16 @@
 export type InstallScope = 'global' | 'local';
 
-export type SourceType = 'git' | 'curl' | 'local';
+// V2 legacy types
+export type LegacySourceType = 'git' | 'curl' | 'local';
 
-export interface SkillSource {
-  type: SourceType;
+export interface LegacySkillSource {
+  type: LegacySourceType;
   url: string;
   path?: string;
   ref?: string;
 }
 
-export interface SkillBundle {
+export interface LegacySkillBundle {
   path: string;
 }
 
@@ -20,19 +21,78 @@ export interface SkillTransformRule {
   strip_bash_preamble?: boolean;
 }
 
+// V2 legacy SkillMeta (kept for migration)
+export interface LegacySkillMeta {
+  name: string;
+  display_name: string;
+  description: string;
+  category: string;
+  tags: string[];
+  source?: LegacySkillSource;
+  bundle?: LegacySkillBundle;
+  author?: string;
+  version?: string;
+  license?: string;
+  agent?: string;
+  transform?: Record<string, SkillTransformRule>;
+}
+
+// V3 types
+export type OriginType = 'bundle' | 'git' | 'github' | 'clawhub' | 'skillstore';
+
+export interface SkillOrigin {
+  type: OriginType;
+  /** Remote reference like owner/repo or repo-name (for github/clawhub/skillstore) */
+  ref?: string;
+  /** Local path for bundle, or sub-path inside git repo */
+  path?: string;
+  /** Full git URL (for git type) */
+  url?: string;
+  /** Git branch/tag (default: main) */
+  refName?: string;
+}
+
+export interface SkillMetaV3 {
+  name: string;
+  displayName: string;
+  description: string;
+  category: string;
+  tags: string[];
+  origin: SkillOrigin;
+  author?: string;
+  version?: string;
+  license?: string;
+  agent?: string;
+  transform?: Record<string, SkillTransformRule>;
+}
+
+// Unified SkillMeta used by Engine (backward-compatible shape)
 export interface SkillMeta {
   name: string;
   display_name: string;
   description: string;
   category: string;
   tags: string[];
-  source?: SkillSource;
-  bundle?: SkillBundle;
+  source?: LegacySkillSource;
+  bundle?: LegacySkillBundle;
   author?: string;
   version?: string;
   license?: string;
   agent?: string;
   transform?: Record<string, SkillTransformRule>;
+}
+
+export interface CategoryGroupV3 {
+  id: string;
+  displayName: string;
+  order: number;
+}
+
+export interface RegistryV3 {
+  version: string;
+  updatedAt: string;
+  categories: CategoryGroupV3[];
+  skills: SkillMetaV3[];
 }
 
 export interface CategoryGroup {
