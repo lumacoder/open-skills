@@ -102,11 +102,12 @@ export async function installCommand(args: string[] = []) {
     }
 
     if (step === STEP_SKILL && category) {
-      selectedSkills = await promptSkills(category.displayName, category.skills);
-      if (selectedSkills.length === 0) {
-        console.log('未选择任何 skill，返回重选...');
+      const skillResult = await promptSkills(category.displayName, category.skills);
+      if (skillResult === '__back__') {
+        step = STEP_CATEGORY;
         continue;
       }
+      selectedSkills = skillResult;
       step = STEP_CONFIRM;
       continue;
     }
