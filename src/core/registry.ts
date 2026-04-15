@@ -47,7 +47,9 @@ export async function loadRegistry(): Promise<CategoryGroup[]> {
   }
 
   const groups: CategoryGroup[] = [];
-  for (const cat of index.categories) {
+  const sortedCategories = [...index.categories].sort((a, b) => a.order - b.order);
+
+  for (const cat of sortedCategories) {
     const skills = skillsByCategory.get(cat.id) || [];
     if (skills.length > 0) {
       groups.push({

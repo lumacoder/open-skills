@@ -18,7 +18,8 @@
     "dev": "tsx src/cli.ts",
     "lint": "tsc --noEmit",
     "validate-registry": "tsx scripts/validate-registry.ts",
-    "test": "vitest"
+    "test": "vitest",
+    "prepublishOnly": "npm run lint && npm run build && npm run validate-registry"
   },
   "publishConfig": {
     "access": "public"
