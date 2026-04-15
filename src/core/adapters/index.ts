@@ -7,6 +7,7 @@ import { WindsurfAdapter } from './windsurf-adapter.js';
 import { ClineAdapter } from './cline-adapter.js';
 import { RooClineAdapter } from './roo-cline-adapter.js';
 import { AntigravityAdapter } from './antigravity-adapter.js';
+import { CursorSkillsAdapter } from './cursor-skills-adapter.js';
 
 export function createAdapter(preset: EditorPreset): BaseAdapter {
   switch (preset.id) {
@@ -21,7 +22,7 @@ export function createAdapter(preset: EditorPreset): BaseAdapter {
     case 'cline':
       return new ClineAdapter(preset);
     case 'cursor-skills':
-      return new ClaudeAdapter(preset);
+      return new CursorSkillsAdapter(preset);
     case 'roo-cline':
       return new RooClineAdapter(preset);
     case 'antigravity':
@@ -41,3 +42,4 @@ export * from './windsurf-adapter.js';
 export * from './cline-adapter.js';
 export * from './roo-cline-adapter.js';
 export * from './antigravity-adapter.js';
+export * from './cursor-skills-adapter.js';
