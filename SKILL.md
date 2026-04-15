@@ -35,4 +35,7 @@ open-skills
 - Cursor
 - Windsurf
 - Cline
+- Cursor Skills
+- Roo-Cline
+- Antigravity
 - GitHub Copilot

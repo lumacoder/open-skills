@@ -42,6 +42,9 @@ open-skills --editor claude-code,cursor --scope global --category frontend
 - Cursor (`.cursorrules`)
 - Windsurf (`.windsurfrules`)
 - Cline (`.clinerules`)
+- Cursor Skills (`.cursor/skills/`)
+- Roo-Cline (`.roorules`)
+- Antigravity (`.antigravityrules`)
 - GitHub Copilot (`.github/skills/`)
 
 ## 目录结构
@@ -50,6 +53,8 @@ open-skills --editor claude-code,cursor --scope global --category frontend
 open-skills/
 ├── src/           # 源代码
 ├── registry/      # skill 元数据清单
+│   ├── _index.yaml  # 分类定义
+│   └── *.yaml       # skill 元数据（平铺）
 ├── bundles/       # 本地副本
 ├── docs/          # 文档
 └── dist/          # 构建输出
