@@ -28,7 +28,8 @@ open-skills --editor claude-code,cursor --scope global --category frontend
 |------|------|
 | `open-skills` | 启动交互式安装引导 |
 | `open-skills list` | 列出所有可用 skills |
-| `open-skills search <keyword>` | 搜索 skills |
+| `open-skills search <keyword>` | 搜索 skills（本地） |
+| `open-skills search <keyword> --remote` | 远程搜索（GitHub / SkillStore） |
 | `open-skills validate` | 校验 registry 完整性 |
 | `open-skills sync` | 将远程 source 同步到本地 bundle |
 | `open-skills update` | 检测并更新已安装的 skills |
@@ -36,6 +37,25 @@ open-skills --editor claude-code,cursor --scope global --category frontend
 | `open-skills import <file>` | 导入 stack 一键安装 |
 | `open-skills create <name> --category <cat>` | 创建本地 Skill 脚手架（dev 模式常用） |
 | `open-skills --dev` | 启动开发者管理面板 |
+
+### 搜索示例
+
+```bash
+# 本地搜索
+open-skills search react
+
+# 仅按名称匹配
+open-skills search react -n
+
+# 远程 GitHub 搜索仓库
+open-skills search react --remote
+
+# 直接解析 GitHub URL（支持子文件夹）
+open-skills search "https://github.com/owner/repo/tree/main/.claude/skills/my-skill" --remote
+
+# 通过 SkillStore slug 查询
+open-skills search "1bertogit/frontend-design" --remote
+```
 
 ## 快速创建 Skill
 
@@ -52,8 +72,10 @@ open-skills create my-awesome-skill \
 ```
 
 创建后会自动生成：
-- `bundles/{category}/{name}/SKILL.md` — 脚手架内容
-- `registry/{name}.yaml` — 自动注册的元数据
+- `bundles/skills/{name}/SKILL.md` — 脚手架内容
+- `registry/skills.json` — 自动注册的元数据
+
+> **注意**：本地 bundle 统一存放在 `bundles/skills/` 下，不再按分类创建子目录。分类仅在 `registry/skills.json` 中标记。
 
 ## 本地开发与管理 Skill 数据源
 
@@ -76,7 +98,7 @@ npm run dev -- --dev
 node dist/cli.js --dev
 ```
 
-在面板中选择 **➕ 创建新 Skill**，交互式填写名称、分类、描述，即可自动生成 bundle 和 registry YAML。
+在面板中选择 **➕ 创建新 Skill**，交互式填写名称、分类、描述，即可自动生成 bundle 和注册到 `registry/skills.json`。
 
 #### 方式 B：命令行快速创建
 见上文「快速创建 Skill」。
@@ -86,7 +108,7 @@ node dist/cli.js --dev
 创建后直接编辑 bundle 下的 `SKILL.md`：
 
 ```bash
-code bundles/frontend/my-awesome-skill/SKILL.md
+code bundles/skills/my-awesome-skill/SKILL.md
 ```
 
 一个标准的 `SKILL.md` 结构示例：
@@ -108,12 +130,12 @@ author: your-name
 2. ...
 ```
 
-> **注意**：对于非 git 来源的 skill（本地开发），`bundle.path` 指向的就是这个目录。
+> **注意**：对于非 git 来源的 skill（本地开发），`origin.path` 指向 `bundles/skills/{name}`。
 
 ### 管理 Skill 数据源
 
 #### 本地 Bundle（非 git 库）
-如果你开发的 skill 不打算放在远程 git 仓库，直接放在 `bundles/` 下即可：
+如果你开发的 skill 不打算放在远程 git 仓库，直接放在 `bundles/skills/` 下即可：
 
 ```bash
 # 进入开发者面板扫描自动注册
@@ -127,17 +149,20 @@ npm run validate-registry    # 会先自动扫描注册，再校验
 ```
 
 #### 远程 Git 来源
-如果 skill 来自远程仓库，在 `registry/{name}.yaml` 中配置 `source`：
+如果 skill 来自远程仓库，在 `registry/skills.json` 中配置 `origin`：
 
-```yaml
-name: react-best-practices
-display_name: "React Best Practices"
-category: frontend
-source:
-  type: git
-  url: https://github.com/vercel-labs/agent-skills.git
-  path: skills/react-best-practices    # 仓库内子路径（可选）
-  ref: main
+```json
+{
+  "name": "react-best-practices",
+  "displayName": "React Best Practices",
+  "category": "frontend",
+  "origin": {
+    "type": "git",
+    "url": "https://github.com/vercel-labs/agent-skills.git",
+    "path": "skills/react-best-practices",
+    "refName": "main"
+  }
+}
 ```
 
 同步到本地 bundle：
@@ -145,10 +170,46 @@ source:
 node dist/cli.js sync --category frontend --name react-best-practices
 ```
 
+> `sync` 支持 `github` / `git` 类型，并且只会拉取 `path` 指定的子文件夹（sparse-checkout），不会下载整个仓库。
+
+#### 远程 GitHub 子路径
+支持直接引用 GitHub 仓库中的某个子文件夹：
+
+```json
+{
+  "name": "frontend-design",
+  "displayName": "frontend-design",
+  "category": "frontend",
+  "origin": {
+    "type": "github",
+    "ref": "1bertogit/modern-face-definitive",
+    "path": ".claude/skills/frontend-design",
+    "refName": "main"
+  }
+}
+```
+
+#### SkillStore 来源
+支持通过 SkillStore 页面 URL 或 slug 自动解析元数据与 GitHub 仓库地址：
+
+```json
+{
+  "name": "frontend-design",
+  "displayName": "frontend-design",
+  "category": "frontend",
+  "origin": {
+    "type": "skillstore",
+    "ref": "1bertogit/frontend-design"
+  }
+}
+```
+
+在 Web 开发者面板中选择 **SkillStore** 并填写 slug（如 `1bertogit/frontend-design`），点击「查询填充」即可自动获取名称、描述、作者、GitHub 仓库地址等信息。
+
 ### 验证与测试
 
 ```bash
-# 校验所有 registry YAML 格式和必填字段
+# 校验所有 registry 格式和必填字段
 npm run validate-registry
 
 # 测试安装到本地
@@ -168,8 +229,8 @@ npm run prepublishOnly    # lint + build + validate-registry
 这条命令会：
 1. 运行 TypeScript 类型检查
 2. 构建 `dist/`
-3. 自动扫描 `bundles/` 补全未注册的 skill
-4. 校验所有 registry YAML 的完整性
+3. 自动扫描 `bundles/skills/` 补全未注册的 skill
+4. 校验 `registry/skills.json` 的完整性
 
 ### 完整开发流程示例
 
@@ -181,7 +242,7 @@ node dist/cli.js create docker-best-practices \
   --description "Dockerfile and compose guidelines"
 
 # Step 2: 开发
-code bundles/devops/docker-best-practices/SKILL.md
+code bundles/skills/docker-best-practices/SKILL.md
 
 # Step 3: 自动注册 + 校验
 npm run validate-registry
@@ -206,15 +267,16 @@ npm add -A && git commit -m "feat: add docker-best-practices skill"
 - GitHub Copilot (`.github/skills/`)
 
 > **注意：** 对于 directory 模式的编辑器（如 Claude Code），`update` 和 `install` 会清理目标目录中不在当前安装清单内的文件。请勿在这些目录中存放手动文件。
+
 ## 目录结构
 
 ```
 open-skills/
 ├── src/           # 源代码
-├── registry/      # skill 元数据清单
-│   ├── _index.yaml  # 分类定义
-│   └── *.yaml       # skill 元数据（平铺）
-├── bundles/       # 本地副本
+├── registry/
+│   └── skills.json   # V3 主数据源（分类 + skill 元数据）
+├── bundles/
+│   └── skills/       # 本地 skill 副本（平铺）
 ├── docs/          # 文档
 └── dist/          # 构建输出
 ```
@@ -223,45 +285,41 @@ open-skills/
 
 ### 分类管理
 
-所有分类定义集中在 `registry/_index.yaml`：
-
-```yaml
-categories:
-  - id: frontend
-    display_name: "前端开发"
-    order: 1
-```
+所有分类定义集中在 `registry/skills.json` 的 `categories` 字段中。
 
 新增分类只需修改此文件，无需创建文件夹。
 
 ### Skill 清单管理
 
-所有 skill 元数据平铺在 `registry/` 根目录，一个 skill 一个 YAML 文件：
+所有 skill 元数据平铺在 `registry/skills.json` 的 `skills` 数组中：
 
-```yaml
-name: react-best-practices
-display_name: "React Best Practices"
-description: "React & Next.js 性能优化指南"
-category: frontend
-tags: [react, nextjs]
-source:
-  type: git
-  url: https://github.com/vercel-labs/agent-skills.git
-  path: skills/react-best-practices
-  ref: main
-author: Vercel Labs
-version: "2.1.0"
-license: MIT
+```json
+{
+  "name": "react-best-practices",
+  "displayName": "React Best Practices",
+  "description": "React & Next.js 性能优化指南",
+  "category": "frontend",
+  "tags": ["react", "nextjs"],
+  "origin": {
+    "type": "git",
+    "url": "https://github.com/vercel-labs/agent-skills.git",
+    "path": "skills/react-best-practices",
+    "refName": "main"
+  },
+  "author": "Vercel Labs",
+  "version": "2.1.0",
+  "license": "MIT"
+}
 ```
 
-移动 skill 分类只需修改 YAML 内的 `category` 字段。
+移动 skill 分类只需修改 JSON 内的 `category` 字段。
 
 ### 校验与同步
 
 ```bash
-npm run validate-registry    # 校验所有 YAML 格式
+npm run validate-registry    # 校验 skills.json 格式
 open-skills validate         # 上述命令的简写
-open-skills sync             # 将远程 git source 同步到 bundles/
+open-skills sync             # 将远程 git source 同步到 bundles/skills/
 ```
 
 ## 开发
