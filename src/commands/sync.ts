@@ -43,7 +43,7 @@ export async function syncCommand(args: string[]) {
       console.log(`\u8df3\u8fc7 ${skill.name}: \u7f3a\u5c11 git URL`);
       continue;
     }
-    const dest = path.join(process.cwd(), skill.origin.path || path.join('bundles', skill.category, skill.name));
+    const dest = path.join(process.cwd(), skill.origin.path || path.join('bundles', 'skills', skill.name));
     await ensureDir(dest);
     await emptyDir(dest);
 

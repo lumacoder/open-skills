@@ -15,7 +15,7 @@ export interface ScaffoldOptions {
 
 export async function createSkillScaffold(options: ScaffoldOptions): Promise<string> {
   const { name, category, displayName, description, author } = options;
-  const bundleDir = path.join(BUNDLES_DIR, category, name);
+  const bundleDir = path.join(BUNDLES_DIR, 'skills', name);
 
   const registry = await loadRegistryV3();
   if (registry.skills.some((s) => s.name === name)) {
@@ -33,7 +33,7 @@ export async function createSkillScaffold(options: ScaffoldOptions): Promise<str
     description: description || '',
     category,
     tags: [],
-    origin: { type: 'bundle', path: path.join('bundles', category, name) },
+    origin: { type: 'bundle', path: path.join('bundles', 'skills', name) },
     author: author || 'unknown',
     version: '1.0.0',
     license: 'MIT',
@@ -70,46 +70,44 @@ function generateSkillMd(opts: { name: string; displayName?: string; description
 export async function scanAndAutoRegister(): Promise<{ registered: string[]; skipped: string[] }> {
   const registered: string[] = [];
   const skipped: string[] = [];
+  const skillsDir = path.join(BUNDLES_DIR, 'skills');
 
-  if (!(await pathExists(BUNDLES_DIR))) {
+  if (!(await pathExists(skillsDir))) {
     return { registered, skipped };
   }
 
   const registry = await loadRegistryV3();
   const existingNames = new Set(registry.skills.map((s) => s.name));
 
-  const categoryDirs = await readdir(BUNDLES_DIR, { withFileTypes: true });
+  const skillDirs = await readdir(skillsDir, { withFileTypes: true });
 
-  for (const catDir of categoryDirs.filter((d) => d.isDirectory())) {
-    const skillDirs = await readdir(path.join(BUNDLES_DIR, catDir.name), { withFileTypes: true });
-    for (const skillDir of skillDirs.filter((d) => d.isDirectory())) {
-      const skillName = skillDir.name;
-      if (existingNames.has(skillName)) {
-        skipped.push(skillName);
-        continue;
-      }
-
-      const hasSkillMd = await pathExists(path.join(BUNDLES_DIR, catDir.name, skillName, 'SKILL.md'));
-      if (!hasSkillMd) {
-        skipped.push(`${skillName} (missing SKILL.md)`);
-        continue;
-      }
-
-      registry.skills.push({
-        name: skillName,
-        displayName: skillName,
-        description: `Auto-registered skill for ${skillName}`,
-        category: catDir.name,
-        tags: [],
-        origin: {
-          type: 'bundle',
-          path: path.join('bundles', catDir.name, skillName),
-        },
-        version: '1.0.0',
-        license: 'MIT',
-      });
-      registered.push(skillName);
+  for (const skillDir of skillDirs.filter((d) => d.isDirectory())) {
+    const skillName = skillDir.name;
+    if (existingNames.has(skillName)) {
+      skipped.push(skillName);
+      continue;
     }
+
+    const hasSkillMd = await pathExists(path.join(skillsDir, skillName, 'SKILL.md'));
+    if (!hasSkillMd) {
+      skipped.push(`${skillName} (missing SKILL.md)`);
+      continue;
+    }
+
+    registry.skills.push({
+      name: skillName,
+      displayName: skillName,
+      description: `Auto-registered skill for ${skillName}`,
+      category: '__uncategorized__',
+      tags: [],
+      origin: {
+        type: 'bundle',
+        path: path.join('bundles', 'skills', skillName),
+      },
+      version: '1.0.0',
+      license: 'MIT',
+    });
+    registered.push(skillName);
   }
 
   if (registered.length > 0) {

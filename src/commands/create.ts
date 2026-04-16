@@ -92,7 +92,7 @@ export async function createCommand(args: string[]) {
   const description = parsed.description || (await input({ message: '\u7b80\u8981\u63cf\u8ff0\uff08\u53ef\u7559\u7a7a\uff09\uff1a' }));
   const author = parsed.author || (await input({ message: '\u4f5c\u8005\uff08\u53ef\u7559\u7a7a\uff09\uff1a' }));
 
-  const bundlePath = path.join('bundles', category, name);
+  const bundlePath = path.join('bundles', 'skills', name);
   const absoluteBundleDir = path.join(process.cwd(), bundlePath);
   await ensureDir(absoluteBundleDir);
 

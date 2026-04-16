@@ -129,7 +129,7 @@
       </div>
       <div class="field" id="pathField">
         <label>本地路径 / 子路径</label>
-        <input id="skillOriginPath" placeholder="bundles/frontend/my-skill" />
+        <input id="skillOriginPath" placeholder="bundles/skills/my-skill" />
       </div>
       <div class="field-row">
         <div class="field">
@@ -426,7 +426,7 @@ const app = {
     if (ref) origin.ref = ref;
     if (url) origin.url = url;
     if (pathVal) origin.path = pathVal;
-    if (type === 'bundle' && !pathVal) origin.path = `bundles/${category}/${name}`;
+    if (type === 'bundle' && !pathVal) origin.path = `bundles/skills/${name}`;
 
     const skill = { name, displayName, description, category, tags, origin, author, version, license };
     if (this.editingSkillIndex >= 0) {

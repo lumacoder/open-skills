@@ -37,7 +37,7 @@ export function toLegacySkillMeta(skill: SkillMetaV3): SkillMeta {
   };
 
   if (skill.origin.type === 'bundle') {
-    legacy.bundle = { path: skill.origin.path || path.join('bundles', skill.category, skill.name) };
+    legacy.bundle = { path: skill.origin.path || path.join('bundles', 'skills', skill.name) };
   } else if (skill.origin.type === 'git') {
     legacy.source = {
       type: 'git',
@@ -115,7 +115,7 @@ export function getSkillByNameV3(registry: RegistryV3, name: string): SkillMetaV
 
 export function ensureSkillBundlePath(skill: SkillMetaV3): SkillMetaV3 {
   if (skill.origin.type === 'bundle' && !skill.origin.path) {
-    skill.origin.path = path.join('bundles', skill.category, skill.name);
+    skill.origin.path = path.join('bundles', 'skills', skill.name);
   }
   return skill;
 }

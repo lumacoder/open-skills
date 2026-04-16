@@ -2,6 +2,7 @@ import type { IncomingMessage, ServerResponse } from 'node:http';
 import type { RegistryV3, SkillMetaV3, CategoryGroupV3 } from '../types/index.js';
 import { loadRegistryV3, saveRegistryV3, ensureSkillBundlePath } from '../core/registry-v3.js';
 import { resolveGitHub } from '../core/resolvers/github-resolver.js';
+import { SkillStoreResolver } from '../core/resolvers/skillstore-resolver.js';
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
@@ -65,6 +66,10 @@ export async function handleApi(req: IncomingMessage, res: ServerResponse): Prom
       }
       if (provider === 'github') {
         const result = await resolveGitHub(ref);
+        json(res, result);
+      } else if (provider === 'skillstore') {
+        const resolver = new SkillStoreResolver();
+        const result = await resolver.resolve(ref);
         json(res, result);
       } else {
         error(res, `Provider ${provider} not implemented yet`);
