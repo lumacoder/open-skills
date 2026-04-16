@@ -27,6 +27,7 @@
   .toolbar button.primary { background: #1f6feb; border-color: #1f6feb; color: #fff; }
   .toolbar button:hover { opacity: 0.9; }
   .status { font-size: 12px; color: #8b949e; }
+  .status.dirty { color: #f85149; font-weight: 600; }
   .content { flex: 1; overflow: auto; padding: 16px; }
   table { width: 100%; border-collapse: collapse; font-size: 13px; }
   th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #30363d; }
@@ -180,6 +181,7 @@ const app = {
   selectedCat: null,
   editingCatIndex: -1,
   editingSkillIndex: -1,
+  dirty: false,
 
   async init() {
     await this.load();
@@ -189,17 +191,46 @@ const app = {
         this.save();
       }
     });
+    window.addEventListener('beforeunload', (e) => {
+      if (this.dirty) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    });
   },
 
   async load() {
     try {
       const res = await fetch('/api/registry');
       this.data = await res.json();
+      this.dirty = false;
       this.renderCats();
       this.renderSkills();
+      this.clearDirty();
       this.setStatus('已加载');
     } catch (e) {
       this.setStatus('加载失败: ' + e.message);
+    }
+  },
+
+  markDirty() {
+    this.dirty = true;
+    const el = document.getElementById('statusText');
+    el.classList.add('dirty');
+    el.textContent = '* 有未保存的更改，请点击保存按钮 (Ctrl+S)';
+  },
+
+  clearDirty() {
+    this.dirty = false;
+    const el = document.getElementById('statusText');
+    el.classList.remove('dirty');
+  },
+
+  setStatus(msg) {
+    const el = document.getElementById('statusText');
+    if (!this.dirty) {
+      el.textContent = msg;
+      setTimeout(() => { if (!this.dirty) el.textContent = ''; }, 3000);
     }
   },
 
@@ -244,11 +275,6 @@ const app = {
     content.innerHTML = `<table><thead><tr><th>名称</th><th>描述</th><th>源</th><th>Tags</th><th>操作</th></tr></thead><tbody>${rows}</tbody></table>`;
   },
 
-  setStatus(msg) {
-    document.getElementById('statusText').textContent = msg;
-    setTimeout(() => { document.getElementById('statusText').textContent = ''; }, 3000);
-  },
-
   addCategory() {
     this.editingCatIndex = -1;
     document.getElementById('catId').value = '';
@@ -275,6 +301,7 @@ const app = {
     this.data.categories = this.data.categories.filter((c) => c.id !== id);
     this.data.skills.forEach((s) => { if (s.category === id) s.category = '__uncategorized__'; });
     if (this.selectedCat === id) this.selectedCat = null;
+    this.markDirty();
     this.renderCats(); this.renderSkills(); this.setStatus('已删除分类');
   },
 
@@ -299,7 +326,8 @@ const app = {
       if (this.data.categories.some((c) => c.id === id)) { alert('分类 ID 已存在'); return; }
       this.data.categories.push({ id, displayName, order });
     }
-    this.closeCatModal(); this.renderCats(); this.renderSkills(); this.setStatus('已保存分类');
+    this.markDirty();
+    this.closeCatModal(); this.renderCats(); this.renderSkills(); this.setStatus('已更新分类，请保存');
   },
 
   addSkill() {
@@ -319,7 +347,8 @@ const app = {
   delSkill(idx) {
     if (!confirm('确定删除该 Skill?')) return;
     this.data.skills.splice(idx, 1);
-    this.renderCats(); this.renderSkills(); this.setStatus('已删除');
+    this.markDirty();
+    this.renderCats(); this.renderSkills(); this.setStatus('已删除，请保存');
   },
 
   fillSkillModal(s) {
@@ -406,7 +435,8 @@ const app = {
       if (this.data.skills.some((s) => s.name === name)) { alert('Skill name 已存在'); return; }
       this.data.skills.push(skill);
     }
-    this.closeSkillModal(); this.renderCats(); this.renderSkills(); this.setStatus('已保存 Skill');
+    this.markDirty();
+    this.closeSkillModal(); this.renderCats(); this.renderSkills(); this.setStatus('已更新 Skill，请保存');
   },
 
   async save() {
@@ -418,6 +448,7 @@ const app = {
       });
       const result = await res.json();
       if (result.error) throw new Error(result.error);
+      this.clearDirty();
       this.setStatus('已保存到 skills.json');
     } catch (e) {
       alert('保存失败: ' + e.message);
@@ -444,8 +475,7 @@ const app = {
   },
 
   async scanBundles() {
-    // Client-side best-effort scan: prompt user to run validate-registry or re-load
-    alert('扫描功能需在命令行执\u884c: npm run validate-registry\n\u6216\u5237\u65b0\u9875\u9762\u540e\u91cd\u65b0\u52a0\u8f7d\u3002');
+    alert('扫描功能需在命令行执行: npm run validate-registry\n或刷新页面后重新加载。');
   }
 };
 
