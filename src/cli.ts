@@ -26,7 +26,7 @@ async function main() {
       await listCommand();
       break;
     case 'search':
-      await searchCommand(args.slice(1).join(' '));
+      await searchCommand(args.slice(1));
       break;
     case 'validate':
       await validateCommand();

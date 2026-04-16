@@ -50,7 +50,7 @@ export async function syncCommand(args: string[]) {
     try {
       const git = simpleGit();
       const ref = skill.origin.refName || 'main';
-      const subPath = skill.origin.path ? undefined : skill.origin.path;
+      const subPath = skill.origin.path || undefined;
 
       if (!subPath) {
         await git.clone(url, dest, ['--depth', '1', '--branch', ref]);
