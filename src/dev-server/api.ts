@@ -3,6 +3,8 @@ import type { RegistryV3, SkillMetaV3, CategoryGroupV3 } from '../types/index.js
 import { loadRegistryV3, saveRegistryV3, ensureSkillBundlePath } from '../core/registry-v3.js';
 import { resolveGitHub } from '../core/resolvers/github-resolver.js';
 import { SkillStoreResolver } from '../core/resolvers/skillstore-resolver.js';
+import { ClawHubResolver } from '../core/resolvers/clawhub-resolver.js';
+import { translateToChinese, generateTagsWithLLM } from '../core/dev/translate.js';
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
@@ -64,15 +66,34 @@ export async function handleApi(req: IncomingMessage, res: ServerResponse): Prom
         error(res, 'Missing provider or ref');
         return true;
       }
+      let result: any = null;
       if (provider === 'github') {
-        const result = await resolveGitHub(ref);
-        json(res, result);
+        result = await resolveGitHub(ref);
       } else if (provider === 'skillstore') {
         const resolver = new SkillStoreResolver();
-        const result = await resolver.resolve(ref);
-        json(res, result);
+        result = await resolver.resolve(ref);
+      } else if (provider === 'clawhub') {
+        const resolver = new ClawHubResolver();
+        result = await resolver.resolve(ref);
       } else {
         error(res, `Provider ${provider} not implemented yet`);
+        return true;
+      }
+
+      if (result) {
+        if (result.displayName) {
+          result.displayName = await translateToChinese(result.displayName);
+        }
+        if (result.description) {
+          result.description = await translateToChinese(result.description);
+        }
+        
+        const tags = await generateTagsWithLLM(result.displayName || result.name || '', result.description || '');
+        if (tags && tags.length > 0) {
+          result.tags = tags;
+        }
+        
+        json(res, result);
       }
     } catch (e: any) {
       error(res, e.message || 'Resolve failed');

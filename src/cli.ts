@@ -10,6 +10,7 @@ import { importCommand } from './commands/import.js';
 import { devPanelCommand } from './commands/dev-panel.js';
 import { createCommand } from './commands/create.js';
 import { migrateCommand } from './commands/migrate.js';
+import { moveCommand } from './commands/move.js';
 import { startDevServer } from './dev-server/server.js';
 
 const args = process.argv.slice(2);
@@ -48,6 +49,9 @@ async function main() {
       break;
     case 'migrate':
       await migrateCommand();
+      break;
+    case 'move':
+      await moveCommand(args.slice(1));
       break;
     default:
       await installCommand(args);

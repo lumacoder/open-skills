@@ -1,36 +1,11 @@
 {
   "version": "3.0.0",
-  "updatedAt": "2026-04-16T09:40:18.456Z",
+  "updatedAt": "2026-04-20T07:00:52.497Z",
   "categories": [
     {
-      "id": "frontend",
-      "displayName": "前端开发",
-      "order": 1
-    },
-    {
-      "id": "backend",
-      "displayName": "后端开发",
-      "order": 2
-    },
-    {
-      "id": "devops",
-      "displayName": "运维 / DevOps",
-      "order": 3
-    },
-    {
-      "id": "product",
-      "displayName": "产品设计",
-      "order": 4
-    },
-    {
-      "id": "ui-ux",
-      "displayName": "UI / UX",
+      "id": "ui-ux-ue",
+      "displayName": "UI / UX / UE",
       "order": 5
-    },
-    {
-      "id": "testing",
-      "displayName": "测试",
-      "order": 6
     },
     {
       "id": "data-science",
@@ -38,22 +13,27 @@
       "order": 7
     },
     {
-      "id": "fullstack",
-      "displayName": "全栈通用",
-      "order": 8
-    },
-    {
       "id": "claudecode",
       "displayName": "ClaudeCode",
       "order": 9
+    },
+    {
+      "id": "devtools",
+      "displayName": "研发效率工具",
+      "order": 10
+    },
+    {
+      "id": "agents",
+      "displayName": "Agents",
+      "order": 5
     }
   ],
   "skills": [
     {
       "name": "frontend-design",
-      "displayName": "frontend-design",
-      "description": "Create distinctive, production-grade frontend interfaces with high design quality. Use this skill when the user asks to build web components, pages, or applications. Generates creative, polished code that avoids generic AI aesthetics.",
-      "category": "frontend",
+      "displayName": "前端页面设计",
+      "description": "创建具有高设计质量的独特、生产级前端界面。当要求构建 Web 组件、页面或应用程序时使用。生成具有创造性、精细优化的代码，避免千篇一律的 AI 审美风格。",
+      "category": "devtools",
       "tags": [],
       "origin": {
         "type": "skillstore",
@@ -65,9 +45,9 @@
     },
     {
       "name": "ui-design",
-      "displayName": "ui-design",
+      "displayName": "UI 样式调整与协作",
       "description": "UI 样式修改协作流程。当用户要求修改页面样式、调整布局、改 UI 细节时使用。通过\"截图定位 → 现状描述 → 方案选择 → 改代码 → 微调\"的结构化流程，减少沟通偏差，避免浪费 token。",
-      "category": "ui-ux",
+      "category": "ui-ux-ue",
       "tags": [],
       "origin": {
         "type": "skillstore",
@@ -79,8 +59,8 @@
     },
     {
       "name": "andrej-karpathy-skills",
-      "displayName": "andrej-karpathy-skills",
-      "description": "A single CLAUDE.md file to improve Claude Code behavior, derived from Andrej Karpathy's observations on LLM coding pitfalls.",
+      "displayName": "Karpathy 提示词优化技巧",
+      "description": "基于 Andrej Karpathy 对 LLM 编码常见缺陷的观察，用于改进 Claude/Agent 行为表现的提示词文件。",
       "category": "claudecode",
       "tags": [],
       "origin": {
@@ -94,9 +74,9 @@
     },
     {
       "name": "canvas-design",
-      "displayName": "canvas-design",
-      "description": "Create beautiful visual art in .png and .pdf documents using design philosophy. You should use this skill when the user asks to create a poster, piece of art, design, or other static piece. Create original visual designs, never copying existing artists' work to avoid copyright violations.",
-      "category": "frontend",
+      "displayName": "Canvas 海报与艺术设计",
+      "description": "运用设计理念创建精美的 .png 和 .pdf 视觉艺术文档。当要求创建海报、艺术作品或其他静态设计时使用，坚持原创视觉设计。",
+      "category": "devtools",
       "tags": [],
       "origin": {
         "type": "skillstore",
@@ -105,6 +85,156 @@
       "author": "ZhanlinCui",
       "version": "1.0.0",
       "license": "https://opensource.org/licenses/Complete terms in LICENSE.txt"
+    },
+    {
+      "name": "deep-research",
+      "displayName": "深度研究与分析",
+      "description": "执行复杂的深度分析和研究任务，自动收集、整理和总结多维度信息。",
+      "category": "data-science",
+      "tags": [],
+      "origin": {
+        "type": "bundle",
+        "path": "bundles\\skills\\deep-research"
+      },
+      "version": "1.0.0",
+      "license": "MIT"
+    },
+    {
+      "name": "frontend-design-ultimate",
+      "displayName": "前端设计终极版",
+      "description": "提供极致的用户界面、交互动画与现代化网页开发规范的高级前端组件设计专家。",
+      "category": "devtools",
+      "tags": [],
+      "origin": {
+        "type": "bundle",
+        "path": "bundles\\skills\\frontend-design-ultimate"
+      },
+      "author": "",
+      "version": "1.0.0",
+      "license": "MIT"
+    },
+    {
+      "name": "shadcn-ui",
+      "displayName": "Shadcn UI 专家",
+      "description": "提供高质量的 Shadcn UI 组件集成与定制设计支持，快速构建现代前端界面。",
+      "category": "devtools",
+      "tags": [],
+      "origin": {
+        "type": "bundle",
+        "path": "bundles\\skills\\shadcn-ui"
+      },
+      "author": "",
+      "version": "1.0.0",
+      "license": "MIT"
+    },
+    {
+      "name": "tailwind-v4-shadcn",
+      "displayName": "Tailwind v4 & Shadcn",
+      "description": "结合最新 Tailwind CSS v4 与 Shadcn UI 最佳实践，提供响应式网页和 UI 组件设计方案。",
+      "category": "devtools",
+      "tags": [],
+      "origin": {
+        "type": "bundle",
+        "path": "bundles\\skills\\tailwind-v4-shadcn"
+      },
+      "author": "",
+      "version": "1.0.0",
+      "license": "MIT"
+    },
+    {
+      "name": "baoyu-xhs-images",
+      "displayName": "小红书爆款配图生成",
+      "description": "基于宝玉的小红书图片设计风格，自动生成适用于小红书等社交平台的爆款配图和设计资产。",
+      "category": "ui-ux-ue",
+      "tags": [],
+      "origin": {
+        "type": "bundle",
+        "path": "bundles\\skills\\baoyu-xhs-images"
+      },
+      "version": "1.0.0",
+      "license": "MIT"
+    },
+    {
+      "name": "lucide-animated-skill",
+      "displayName": "lucide-animated-skill",
+      "description": "Claude Code skill for lucide-animated - 350+ animated React icons",
+      "category": "ui-ux-ue",
+      "tags": [],
+      "origin": {
+        "type": "github",
+        "ref": "metasal1/lucide-animated-skill"
+      },
+      "author": "metasal1",
+      "version": "main",
+      "license": "MIT"
+    },
+    {
+      "name": "caveman",
+      "displayName": "穴居人",
+      "description": "🪨 why use many token when few token do trick — Claude Code skill that cuts 65% of tokens by talking like caveman",
+      "category": "claudecode",
+      "tags": [],
+      "origin": {
+        "type": "github",
+        "ref": "JuliusBrussee/caveman"
+      },
+      "author": "JuliusBrussee",
+      "version": "v1.6.0",
+      "license": "MIT"
+    },
+    {
+      "name": "python-script-generator",
+      "displayName": "Python 脚本生成器 — ClawHub",
+      "description": "生成专业的 Python 脚本和应用模板，支持 CLI 工具、Flask API、FastAPI、Django Command、Scraper 等，一键生成完整项目代码。",
+      "category": "devtools",
+      "tags": [],
+      "origin": {
+        "type": "clawhub",
+        "ref": "sunshine-del-ux/python-script-generator"
+      },
+      "author": "",
+      "version": "1.0.0",
+      "license": "MIT"
+    },
+    {
+      "name": "self-improving-agent",
+      "displayName": "自我改进代理",
+      "description": "自我提升工具。它记录学习心得、错误和功能需求，以支持跨会话的持续改进。",
+      "category": "claudecode",
+      "tags": [
+        "ai-agent",
+        "self-improving",
+        "autonomous-agent",
+        "machine-learning",
+        "reinforcement-learning"
+      ],
+      "origin": {
+        "type": "github",
+        "ref": "peterskoett/self-improving-agent"
+      },
+      "author": "peterskoett",
+      "version": "main",
+      "license": "MIT"
+    },
+    {
+      "name": "claude-mem",
+      "displayName": "claude-mem",
+      "description": "一个 Claude 代码插件，可自动捕获 Claude 在编码会话期间所做的一切，使用 AI 对其进行压缩（使用 Claude 的代理 SDK），并将相关上下文注入到未来的会话中。",
+      "category": "claudecode",
+      "tags": [
+        "claude",
+        "ai-memory",
+        "agent-sdk",
+        "code-plugin",
+        "context-management"
+      ],
+      "origin": {
+        "type": "github",
+        "ref": "thedotmack/claude-mem"
+      },
+      "author": "thedotmack",
+      "version": "v12.3.2",
+      "license": "NOASSERTION"
     }
   ]
 }

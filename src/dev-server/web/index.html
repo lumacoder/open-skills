@@ -396,6 +396,7 @@ const app = {
       if (data.license) document.getElementById('skillLicense').value = data.license;
       if (data.version) document.getElementById('skillVersion').value = data.version;
       if (data.name && !document.getElementById('skillName').value) document.getElementById('skillName').value = data.name;
+      if (data.tags && data.tags.length > 0) document.getElementById('skillTags').value = data.tags.join(', ');
       this.setStatus('已填充');
     } catch (e) {
       alert('查询失败: ' + e.message);

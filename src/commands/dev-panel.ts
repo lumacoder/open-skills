@@ -1,5 +1,6 @@
 import { select, input, checkbox } from '@inquirer/prompts';
 import { loadRegistry } from '../core/registry.js';
+import { loadRegistryV3, saveRegistryV3 } from '../core/registry-v3.js';
 import { validateRegistry } from '../core/validator.js';
 import { createSkillScaffold, scanAndAutoRegister } from '../core/dev/scaffold.js';
 import { editorPresets } from '../core/presets/editors.js';
@@ -7,6 +8,7 @@ import { editorPresets } from '../core/presets/editors.js';
 const MENU_STATUS = 'status';
 const MENU_CREATE = 'create';
 const MENU_SCAN = 'scan';
+const MENU_MOVE = 'move';
 const MENU_VALIDATE = 'validate';
 const MENU_EXIT = 'exit';
 
@@ -21,6 +23,7 @@ export async function devPanelCommand() {
         { name: '\u{1F4CB} \u67e5\u770b Registry \u72b6\u6001', value: MENU_STATUS },
         { name: '\u2795 \u521b\u5efa\u65b0 Skill', value: MENU_CREATE },
         { name: '\ud83d\udd0d \u626b\u63cf\u5e76\u81ea\u52a8\u6ce8\u518c Bundles', value: MENU_SCAN },
+        { name: '\u21c4 \u79fb\u52a8 Skill \u5206\u7c7b', value: MENU_MOVE },
         { name: '\u2705 \u6821\u9a8c Registry', value: MENU_VALIDATE },
         { name: '\u00d7 \u9000\u51fa', value: MENU_EXIT },
       ],
@@ -37,6 +40,8 @@ export async function devPanelCommand() {
       await createSkillFlow();
     } else if (action === MENU_SCAN) {
       await scanFlow();
+    } else if (action === MENU_MOVE) {
+      await moveFlow();
     } else if (action === MENU_VALIDATE) {
       await validateFlow();
     }
@@ -145,3 +150,37 @@ async function validateFlow() {
     console.log(`  \u9519\u8bef: ${err.message}\n`);
   }
 }
+
+async function moveFlow() {
+  const registry = await loadRegistryV3();
+  const skills = registry.skills.map(s => ({ name: `${s.displayName} (${s.name}) - [${s.category}]`, value: s.name }));
+  if (skills.length === 0) {
+    console.log('\n\u6ca1\u6709\u53ef\u79fb\u52a8\u7684 Skill\u3002\n');
+    return;
+  }
+
+  const skillName = await select<string>({
+    message: '\u9009\u62e9\u8981\u79fb\u52a8\u7684 Skill\uff1a',
+    choices: skills,
+  });
+
+  const categories = registry.categories.map(c => ({ name: c.displayName, value: c.id }));
+  const newCategory = await select<string>({
+    message: '\u9009\u62e9\u65b0\u7684\u5206\u7c7b\uff1a',
+    choices: categories,
+  });
+
+  const skill = registry.skills.find(s => s.name === skillName);
+  if (!skill) return;
+
+  const oldCategory = skill.category;
+  if (oldCategory === newCategory) {
+    console.log(`\n\u26a0\ufe0f Skill \u5df2\u7ecf\u5728 [${newCategory}] \u5206\u7c7b\u4e2d\u3002\n`);
+    return;
+  }
+
+  skill.category = newCategory;
+  await saveRegistryV3(registry);
+  console.log(`\n\u2713 \u6210\u529f\u5c06 ${skill.displayName} \u4ece [${oldCategory}] \u79fb\u52a8\u5230 [${newCategory}]\u3002\n`);
+}
+

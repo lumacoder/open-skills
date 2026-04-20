@@ -36,6 +36,7 @@ open-skills --editor claude-code,cursor --scope global --category frontend
 | `open-skills export <file>` | 导出当前 stack |
 | `open-skills import <file>` | 导入 stack 一键安装 |
 | `open-skills create <name> --category <cat>` | 创建本地 Skill 脚手架（dev 模式常用） |
+| `open-skills move <name> <new-cat>` | 将已存在的 Skill 移动到新分类 |
 | `open-skills --dev` | 启动开发者管理面板 |
 
 ### 搜索示例
@@ -56,6 +57,20 @@ open-skills search "https://github.com/owner/repo/tree/main/.claude/skills/my-sk
 # 通过 SkillStore slug 查询
 open-skills search "1bertogit/frontend-design" --remote
 ```
+
+## 内置 Skills 列表
+
+| ID (name) | 技能名称 (displayName) | 简介 (description) |
+|-----------|------------------------|--------------------|
+| `frontend-design` | 前端页面设计 | 创建具有高设计质量的独特、生产级前端界面。当要求构建 Web 组件、页面或应用程序时使用。生成具有创造性、精细优化的代码，避免千篇一律的 AI 审美风格。 |
+| `ui-design` | UI 样式调整与协作 | UI 样式修改协作流程。当用户要求修改页面样式、调整布局、改 UI 细节时使用。通过"截图定位 → 现状描述 → 方案选择 → 改代码 → 微调"的结构化流程，减少沟通偏差，避免浪费 token。 |
+| `andrej-karpathy-skills` | Karpathy 提示词优化技巧 | 基于 Andrej Karpathy 对 LLM 编码常见缺陷的观察，用于改进 Claude/Agent 行为表现的提示词文件。 |
+| `canvas-design` | Canvas 海报与艺术设计 | 运用设计理念创建精美的 .png 和 .pdf 视觉艺术文档。当要求创建海报、艺术作品或其他静态设计时使用，坚持原创视觉设计。 |
+| `deep-research` | 深度研究与分析 | 执行复杂的深度分析和研究任务，自动收集、整理和总结多维度信息。 |
+| `frontend-design-ultimate`| 前端设计终极版 | 提供极致的用户界面、交互动画与现代化网页开发规范的高级前端组件设计专家。 |
+| `shadcn-ui` | Shadcn UI 专家 | 提供高质量的 Shadcn UI 组件集成与定制设计支持，快速构建现代前端界面。 |
+| `tailwind-v4-shadcn` | Tailwind v4 & Shadcn | 结合最新 Tailwind CSS v4 与 Shadcn UI 最佳实践，提供响应式网页和 UI 组件设计方案。 |
+| `baoyu-xhs-images` | 小红书爆款配图生成 | 基于宝玉的小红书图片设计风格，自动生成适用于小红书等社交平台的爆款配图和设计资产。 |
 
 ## 快速创建 Skill
 
