@@ -1,143 +1,204 @@
 # open-skills
 
-一个面向多 IDE/AI 编辑器的 Skill 分发与同步引擎。
+> 多 IDE/AI 编辑器的 Skill 分发与同步引擎。
+
+通过统一的 Skill 格式，将提示词工程、设计规范、开发流程等知识资产一键分发到 Claude Code、Cursor、Windsurf 等主流 AI 编辑器。
+
+## 目录
+
+- [快速开始](#快速开始)
+- [安装](#安装)
+- [核心功能](#核心功能)
+- [使用指南](#使用指南)
+- [CLI 命令参考](#cli-命令参考)
+- [内置 Skills](#内置-skills)
+- [开发指南](#开发指南)
+  - [环境准备](#环境准备)
+  - [创建 Skill](#创建-skill)
+  - [管理数据源](#管理数据源)
+  - [验证与发布](#验证与发布)
+- [支持的目标编辑器](#支持的目标编辑器)
+- [目录结构](#目录结构)
+- [License](#license)
+
+---
+
+## 快速开始
+
+```bash
+# 安装 CLI
+npx skills add lumacoder/open-skills -g -y
+
+# 启动交互式安装
+open-skills
+
+# 或一行命令指定参数
+open-skills --editor claude-code,cursor --scope global --category frontend
+```
+
+---
 
 ## 安装
 
 ```bash
-npx skills add lumacoder/open-skills -g -y
+# npm
+npm install -g open-skills
+
+# pnpm
+pnpm add -g open-skills
+
+# npx（无需全局安装）
+npx open-skills
 ```
 
-## 使用
+---
 
-启动交互式安装引导：
+## 核心功能
+
+| 功能 | 说明 |
+|------|------|
+| **一键分发** | 将 Skill 同步到多个 IDE 的目标目录 |
+| **远程同步** | 支持 GitHub / Git 子路径稀疏检出，自动更新 |
+| **交互式引导** | 无需记忆参数，向导式选择编辑器、范围、分类 |
+| **SkillStore 集成** | 通过 slug 自动解析远程 Skill 元数据 |
+| **Stack 管理** | 导出/导入 Skill 组合，实现团队配置共享 |
+
+---
+
+## 使用指南
+
+### 交互式安装（推荐）
 
 ```bash
 open-skills
 ```
 
-快捷指定参数：
+按向导选择目标编辑器、安装范围（global/local）和 Skill 分类即可。
+
+### 快捷参数安装
 
 ```bash
 open-skills --editor claude-code,cursor --scope global --category frontend
 ```
 
-## CLI 命令
+### 搜索 Skills
+
+```bash
+# 本地搜索
+open-skills search react
+
+# 按名称精确匹配
+open-skills search react -n
+
+# 远程 GitHub 搜索
+open-skills search react --remote
+
+# 直接解析 GitHub 子路径
+open-skills search "https://github.com/owner/repo/tree/main/.claude/skills/my-skill" --remote
+
+# SkillStore slug 查询
+open-skills search "1bertogit/frontend-design" --remote
+```
+
+### Stack 导出与导入
+
+```bash
+# 导出当前配置
+open-skills export my-stack.json
+
+# 在新环境一键恢复
+open-skills import my-stack.json
+```
+
+---
+
+## CLI 命令参考
 
 | 命令 | 说明 |
 |------|------|
 | `open-skills` | 启动交互式安装引导 |
 | `open-skills list` | 列出所有可用 skills |
-| `open-skills search <keyword>` | 搜索 skills（本地） |
+| `open-skills search <keyword>` | 本地搜索 skills |
 | `open-skills search <keyword> --remote` | 远程搜索（GitHub / SkillStore） |
 | `open-skills validate` | 校验 registry 完整性 |
 | `open-skills sync` | 将远程 source 同步到本地 bundle |
 | `open-skills update` | 检测并更新已安装的 skills |
 | `open-skills export <file>` | 导出当前 stack |
 | `open-skills import <file>` | 导入 stack 一键安装 |
-| `open-skills create <name> --category <cat>` | 创建本地 Skill 脚手架（dev 模式常用） |
-| `open-skills move <name> <new-cat>` | 将已存在的 Skill 移动到新分类 |
+| `open-skills create <name> --category <cat>` | 创建本地 Skill 脚手架 |
+| `open-skills move <name> <new-cat>` | 移动 Skill 到新分类 |
 | `open-skills --dev` | 启动开发者管理面板 |
 
-### 搜索示例
+---
 
-```bash
-# 本地搜索
-open-skills search react
+## 内置 Skills
 
-# 仅按名称匹配
-open-skills search react -n
-
-# 远程 GitHub 搜索仓库
-open-skills search react --remote
-
-# 直接解析 GitHub URL（支持子文件夹）
-open-skills search "https://github.com/owner/repo/tree/main/.claude/skills/my-skill" --remote
-
-# 通过 SkillStore slug 查询
-open-skills search "1bertogit/frontend-design" --remote
-```
-
-## 内置 Skills 列表
-
-| ID (name) | 技能名称 (displayName) | 简介 (description) |
-|-----------|------------------------|--------------------|
-| `frontend-design` | 前端页面设计 | 创建具有高设计质量的独特、生产级前端界面。当要求构建 Web 组件、页面或应用程序时使用。生成具有创造性、精细优化的代码，避免千篇一律的 AI 审美风格。 |
-| `ui-design` | UI 样式调整与协作 | UI 样式修改协作流程。当用户要求修改页面样式、调整布局、改 UI 细节时使用。通过"截图定位 → 现状描述 → 方案选择 → 改代码 → 微调"的结构化流程，减少沟通偏差，避免浪费 token。 |
-| `andrej-karpathy-skills` | Karpathy 提示词优化技巧 | 基于 Andrej Karpathy 对 LLM 编码常见缺陷的观察，用于改进 Claude/Agent 行为表现的提示词文件。 |
-| `canvas-design` | Canvas 海报与艺术设计 | 运用设计理念创建精美的 .png 和 .pdf 视觉艺术文档。当要求创建海报、艺术作品或其他静态设计时使用，坚持原创视觉设计。 |
+| ID | 名称 | 简介 |
+|----|------|------|
+| `frontend-design` | 前端页面设计 | 创建具有高设计质量的独特、生产级前端界面。避免千篇一律的 AI 审美风格。 |
+| `ui-design` | UI 样式调整与协作 | 通过"截图定位 → 现状描述 → 方案选择 → 改代码 → 微调"的结构化流程修改 UI。 |
+| `andrej-karpathy-skills` | Karpathy 提示词优化技巧 | 基于 Andrej Karpathy 对 LLM 编码缺陷的观察，改进 Agent 行为表现。 |
+| `canvas-design` | Canvas 海报与艺术设计 | 运用设计理念创建精美的 PNG/PDF 视觉艺术文档。 |
 | `deep-research` | 深度研究与分析 | 执行复杂的深度分析和研究任务，自动收集、整理和总结多维度信息。 |
-| `frontend-design-ultimate`| 前端设计终极版 | 提供极致的用户界面、交互动画与现代化网页开发规范的高级前端组件设计专家。 |
-| `shadcn-ui` | Shadcn UI 专家 | 提供高质量的 Shadcn UI 组件集成与定制设计支持，快速构建现代前端界面。 |
-| `tailwind-v4-shadcn` | Tailwind v4 & Shadcn | 结合最新 Tailwind CSS v4 与 Shadcn UI 最佳实践，提供响应式网页和 UI 组件设计方案。 |
-| `baoyu-xhs-images` | 小红书爆款配图生成 | 基于宝玉的小红书图片设计风格，自动生成适用于小红书等社交平台的爆款配图和设计资产。 |
+| `frontend-design-ultimate` | 前端设计终极版 | 极致的用户界面、交互动画与现代化网页开发规范。 |
+| `shadcn-ui` | Shadcn UI 专家 | 高质量的 Shadcn UI 组件集成与定制设计支持。 |
+| `tailwind-v4-shadcn` | Tailwind v4 & Shadcn | 结合最新 Tailwind CSS v4 与 Shadcn UI 最佳实践。 |
+| `baoyu-xhs-images` | 小红书爆款配图生成 | 基于宝玉的小红书图片设计风格，自动生成社交平台配图。 |
 
-## 快速创建 Skill
+---
 
-```bash
-# 交互式创建
-open-skills create
-
-# 非交互式（CI/脚本友好）
-open-skills create my-awesome-skill \
-  --category frontend \
-  --display-name "My Awesome Skill" \
-  --description "What this skill does" \
-  --author "your-name"
-```
-
-创建后会自动生成：
-- `bundles/skills/{name}/SKILL.md` — 脚手架内容
-- `registry/skills.json` — 自动注册的元数据
-
-> **注意**：本地 bundle 统一存放在 `bundles/skills/` 下，不再按分类创建子目录。分类仅在 `registry/skills.json` 中标记。
-
-## 本地开发与管理 Skill 数据源
+## 开发指南
 
 ### 环境准备
 
 ```bash
 git clone <repo> && cd open-skills
 npm install
-npm run build          # 构建 dist/
+npm run build
 ```
 
-开发时可以直接用 `npm run dev` 代替 `node dist/cli.js`。
+开发时可用 `npm run dev` 代替 `node dist/cli.js`。
 
-### 创建新 Skill
+### 创建 Skill
 
 #### 方式 A：开发者面板（推荐）
+
 ```bash
 npm run dev -- --dev
-# 或
-node dist/cli.js --dev
 ```
 
-在面板中选择 **➕ 创建新 Skill**，交互式填写名称、分类、描述，即可自动生成 bundle 和注册到 `registry/skills.json`。
+选择 **➕ 创建新 Skill**，交互式填写名称、分类、描述，自动生成 bundle 并注册到 `registry/skills.json`。
 
-#### 方式 B：命令行快速创建
-见上文「快速创建 Skill」。
-
-### 开发 Skill 内容
-
-创建后直接编辑 bundle 下的 `SKILL.md`：
+#### 方式 B：命令行
 
 ```bash
-code bundles/skills/my-awesome-skill/SKILL.md
+open-skills create my-skill \
+  --category frontend \
+  --display-name "My Skill" \
+  --description "What this skill does" \
+  --author "your-name"
 ```
 
-一个标准的 `SKILL.md` 结构示例：
+创建后自动生成：
+- `bundles/skills/{name}/SKILL.md` — Skill 内容
+- `registry/skills.json` — 元数据注册
+
+> **注意**：本地 bundle 统一存放在 `bundles/skills/` 下，不再按分类创建子目录。分类仅在 `registry/skills.json` 中标记。
+
+#### Skill 内容结构
+
+编辑生成的 `SKILL.md`：
 
 ```markdown
 ---
-name: my-awesome-skill
-display_name: "My Awesome Skill"
+name: my-skill
+display_name: "My Skill"
 description: "What this skill does"
 version: "1.0.0"
 author: your-name
 ---
 
-# My Awesome Skill
+# My Skill
 
 ## 规则
 
@@ -145,26 +206,24 @@ author: your-name
 2. ...
 ```
 
-> **注意**：对于非 git 来源的 skill（本地开发），`origin.path` 指向 `bundles/skills/{name}`。
+### 管理数据源
 
-### 管理 Skill 数据源
+#### 本地 Bundle（非 Git 来源）
 
-#### 本地 Bundle（非 git 库）
-如果你开发的 skill 不打算放在远程 git 仓库，直接放在 `bundles/skills/` 下即可：
+直接放在 `bundles/skills/` 下，通过开发者面板或命令行扫描注册：
 
 ```bash
-# 进入开发者面板扫描自动注册
-node dist/cli.js --dev
+# 扫描并自动注册
+npm run dev -- --dev
 # → 选择 "扫描并自动注册 Bundles"
-```
 
-或在命令行直接扫描并校验：
-```bash
-npm run validate-registry    # 会先自动扫描注册，再校验
+# 或命令行验证（会自动扫描）
+npm run validate-registry
 ```
 
 #### 远程 Git 来源
-如果 skill 来自远程仓库，在 `registry/skills.json` 中配置 `origin`：
+
+在 `registry/skills.json` 中配置 `origin`：
 
 ```json
 {
@@ -180,20 +239,19 @@ npm run validate-registry    # 会先自动扫描注册，再校验
 }
 ```
 
-同步到本地 bundle：
+同步到本地：
+
 ```bash
-node dist/cli.js sync --category frontend --name react-best-practices
+open-skills sync --category frontend --name react-best-practices
 ```
 
-> `sync` 支持 `github` / `git` 类型，并且只会拉取 `path` 指定的子文件夹（sparse-checkout），不会下载整个仓库。
+> `sync` 支持 `github` / `git` 类型，仅拉取 `path` 指定的子文件夹（sparse-checkout）。
 
-#### 远程 GitHub 子路径
-支持直接引用 GitHub 仓库中的某个子文件夹：
+#### GitHub 子路径
 
 ```json
 {
   "name": "frontend-design",
-  "displayName": "frontend-design",
   "category": "frontend",
   "origin": {
     "type": "github",
@@ -205,12 +263,10 @@ node dist/cli.js sync --category frontend --name react-best-practices
 ```
 
 #### SkillStore 来源
-支持通过 SkillStore 页面 URL 或 slug 自动解析元数据与 GitHub 仓库地址：
 
 ```json
 {
   "name": "frontend-design",
-  "displayName": "frontend-design",
   "category": "frontend",
   "origin": {
     "type": "skillstore",
@@ -219,133 +275,77 @@ node dist/cli.js sync --category frontend --name react-best-practices
 }
 ```
 
-在 Web 开发者面板中选择 **SkillStore** 并填写 slug（如 `1bertogit/frontend-design`），点击「查询填充」即可自动获取名称、描述、作者、GitHub 仓库地址等信息。
+在 Web 开发者面板中填写 slug，点击「查询填充」即可自动获取元数据。
 
-### 验证与测试
+### 验证与发布
 
 ```bash
-# 校验所有 registry 格式和必填字段
+# 校验 registry 格式和必填字段
 npm run validate-registry
 
-# 测试安装到本地
+# 测试本地安装
 node dist/cli.js --editor claude-code --scope local --category frontend
 
-# 查看 registry 状态
-node dist/cli.js list
-node dist/cli.js search my-awesome-skill
-```
-
-### 发布前检查清单
-
-```bash
+# 发布前完整检查
 npm run prepublishOnly    # lint + build + validate-registry
 ```
 
-这条命令会：
-1. 运行 TypeScript 类型检查
-2. 构建 `dist/`
-3. 自动扫描 `bundles/skills/` 补全未注册的 skill
-4. 校验 `registry/skills.json` 的完整性
-
-### 完整开发流程示例
+完整开发流程示例：
 
 ```bash
-# Step 1: 创建
+# 1. 创建
 node dist/cli.js create docker-best-practices \
   --category devops \
   --display-name "Docker Best Practices" \
   --description "Dockerfile and compose guidelines"
 
-# Step 2: 开发
+# 2. 开发
 code bundles/skills/docker-best-practices/SKILL.md
 
-# Step 3: 自动注册 + 校验
+# 3. 自动注册 + 校验
 npm run validate-registry
 
-# Step 4: 本地安装测试
+# 4. 本地安装测试
 node dist/cli.js --editor claude-code --scope local --category devops
 
-# Step 5: 提交
-npm add -A && git commit -m "feat: add docker-best-practices skill"
+# 5. 提交
+git add -A && git commit -m "feat: add docker-best-practices skill"
 ```
+
+---
 
 ## 支持的目标编辑器
 
-- Claude Code (`~/.claude/skills/`)
-- Hermes (`~/.hermes/skills/`)
-- Cursor (`.cursorrules`)
-- Windsurf (`.windsurfrules`)
-- Cline (`.clinerules`)
-- Cursor Skills (`.cursor/skills/`)
-- Roo-Cline (`.roorules`)
-- Antigravity (`.agents/skills/`)
-- GitHub Copilot (`.github/skills/`)
+| 编辑器 | 安装路径 |
+|--------|----------|
+| Claude Code | `~/.claude/skills/` |
+| Hermes | `~/.hermes/skills/` |
+| Cursor | `.cursorrules` |
+| Windsurf | `.windsurfrules` |
+| Cline | `.clinerules` |
+| Cursor Skills | `.cursor/skills/` |
+| Roo-Cline | `.roorules` |
+| Antigravity | `.agents/skills/` |
+| GitHub Copilot | `.github/skills/` |
 
-> **注意：** 对于 directory 模式的编辑器（如 Claude Code），`update` 和 `install` 会清理目标目录中不在当前安装清单内的文件。请勿在这些目录中存放手动文件。
+> **注意**：对于 directory 模式的编辑器（如 Claude Code），`update` 和 `install` 会清理目标目录中不在当前安装清单内的文件。请勿在这些目录中存放手动文件。
+
+---
 
 ## 目录结构
 
 ```
 open-skills/
-├── src/           # 源代码
+├── src/                    # 源代码
 ├── registry/
-│   └── skills.json   # V3 主数据源（分类 + skill 元数据）
+│   └── skills.json         # V3 主数据源（分类 + skill 元数据）
 ├── bundles/
-│   └── skills/       # 本地 skill 副本（平铺）
-├── docs/          # 文档
-└── dist/          # 构建输出
+│   └── skills/             # 本地 skill 副本（平铺）
+├── docs/                   # 文档
+└── dist/                   # 构建输出
 ```
 
-## Registry 管理
-
-### 分类管理
-
-所有分类定义集中在 `registry/skills.json` 的 `categories` 字段中。
-
-新增分类只需修改此文件，无需创建文件夹。
-
-### Skill 清单管理
-
-所有 skill 元数据平铺在 `registry/skills.json` 的 `skills` 数组中：
-
-```json
-{
-  "name": "react-best-practices",
-  "displayName": "React Best Practices",
-  "description": "React & Next.js 性能优化指南",
-  "category": "frontend",
-  "tags": ["react", "nextjs"],
-  "origin": {
-    "type": "git",
-    "url": "https://github.com/vercel-labs/agent-skills.git",
-    "path": "skills/react-best-practices",
-    "refName": "main"
-  },
-  "author": "Vercel Labs",
-  "version": "2.1.0",
-  "license": "MIT"
-}
-```
-
-移动 skill 分类只需修改 JSON 内的 `category` 字段。
-
-### 校验与同步
-
-```bash
-npm run validate-registry    # 校验 skills.json 格式
-open-skills validate         # 上述命令的简写
-open-skills sync             # 将远程 git source 同步到 bundles/skills/
-```
-
-## 开发
-
-```bash
-npm install
-npm run dev
-npm run lint
-npm run build
-npm run validate-registry
-```
+---
 
 ## License
 
