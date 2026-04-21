@@ -5,8 +5,44 @@ import type { BaseAdapter } from './adapters/base-adapter.js';
 import type { InstallScope, SkillMeta, InstallResult } from '../types/index.js';
 import { transformSkillContent } from './transformer.js';
 import { cleanDirectory } from './cleaner.js';
-import { mkdtemp, readFile, remove } from './fs-utils.js';
+import { mkdtemp, readFile, remove, readdir } from './fs-utils.js';
 import { cloneWithResolvedRef } from './git-utils.js';
+
+/**
+ * Recursively search for a skill file in a directory.
+ * Tries SKILL.md first, then common fallbacks.
+ */
+async function findSkillFile(dir: string): Promise<string | null> {
+  const candidates = ['SKILL.md', 'skill.md', 'Claude_Skill.md'];
+
+  async function search(currentDir: string): Promise<string | null> {
+    let entries;
+    try {
+      entries = await readdir(currentDir, { withFileTypes: true });
+    } catch {
+      return null;
+    }
+
+    for (const entry of entries) {
+      const fullPath = path.join(currentDir, entry.name);
+      if (entry.isFile() && candidates.includes(entry.name)) {
+        return fullPath;
+      }
+    }
+
+    for (const entry of entries) {
+      const fullPath = path.join(currentDir, entry.name);
+      if (entry.isDirectory() && entry.name !== '.git') {
+        const found = await search(fullPath);
+        if (found) return found;
+      }
+    }
+
+    return null;
+  }
+
+  return search(dir);
+}
 
 export class Engine {
   async process(
@@ -61,7 +97,11 @@ export class Engine {
       const tmpDir = await mkdtemp(path.join(os.tmpdir(), 'open-skills-'));
       try {
         await cloneWithResolvedRef(url, tmpDir, { ref });
-        return await readFile(path.join(tmpDir, 'SKILL.md'), 'utf-8');
+        const skillFile = await findSkillFile(tmpDir);
+        if (!skillFile) {
+          throw new Error(`No SKILL.md found in cloned repository: ${url}`);
+        }
+        return await readFile(skillFile, 'utf-8');
       } finally {
         await remove(tmpDir);
       }
@@ -74,7 +114,11 @@ export class Engine {
       await repoGit.raw(['sparse-checkout', 'init', '--cone']);
       await repoGit.raw(['sparse-checkout', 'set', subPath]);
       await repoGit.checkout(resolvedRef);
-      return await readFile(path.join(tmpDir, subPath, 'SKILL.md'), 'utf-8');
+      const skillFile = await findSkillFile(path.join(tmpDir, subPath));
+      if (!skillFile) {
+        throw new Error(`No SKILL.md found in path "${subPath}" of repository: ${url}`);
+      }
+      return await readFile(skillFile, 'utf-8');
     } finally {
       await remove(tmpDir);
     }

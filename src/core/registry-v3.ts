@@ -52,11 +52,19 @@ export function toLegacySkillMeta(skill: SkillMetaV3): SkillMeta {
       path: skill.origin.path,
       ref: skill.origin.refName || 'main',
     };
-  } else {
-    // clawhub / skillstore — treat as git for MVP, resolver can override at runtime
+  } else if (skill.origin.type === 'clawhub' || skill.origin.type === 'skillstore') {
+    // clawhub / skillstore — treat as git for MVP, construct GitHub URL from ref
     legacy.source = {
       type: 'git',
-      url: skill.origin.url || '',
+      url: skill.origin.url || (skill.origin.ref ? `https://github.com/${skill.origin.ref}.git` : ''),
+      path: skill.origin.path,
+      ref: skill.origin.refName || 'main',
+    };
+  } else {
+    // fallback for any unknown origin type
+    legacy.source = {
+      type: 'git',
+      url: skill.origin.url || (skill.origin.ref ? `https://github.com/${skill.origin.ref}.git` : ''),
       path: skill.origin.path,
       ref: skill.origin.refName || 'main',
     };
