@@ -5,6 +5,7 @@ import { loadRegistryV3 } from '../core/registry-v3.js';
 import { ensureDir, emptyDir, remove } from '../core/fs-utils.js';
 import { mkdtemp } from '../core/fs-utils.js';
 import { copy } from '../core/fs-utils.js';
+import { cloneWithResolvedRef } from '../core/git-utils.js';
 
 function parseSyncArgs(args: string[]): { category?: string; name?: string } {
   const result: { category?: string; name?: string } = {};
@@ -48,21 +49,20 @@ export async function syncCommand(args: string[]) {
     await emptyDir(dest);
 
     try {
-      const git = simpleGit();
       const ref = skill.origin.refName || 'main';
       const subPath = skill.origin.path || undefined;
 
       if (!subPath) {
-        await git.clone(url, dest, ['--depth', '1', '--branch', ref]);
+        await cloneWithResolvedRef(url, dest, { ref });
         await remove(path.join(dest, '.git'));
       } else {
         const tmpDir = await mkdtemp(path.join(os.tmpdir(), 'open-skills-sync-'));
         try {
-          await git.clone(url, tmpDir, ['--depth', '1', '--branch', ref, '--no-checkout']);
+          const resolvedRef = await cloneWithResolvedRef(url, tmpDir, { ref, noCheckout: true });
           const repoGit = simpleGit(tmpDir);
           await repoGit.raw(['sparse-checkout', 'init', '--cone']);
           await repoGit.raw(['sparse-checkout', 'set', subPath]);
-          await repoGit.checkout(ref);
+          await repoGit.checkout(resolvedRef);
           const src = path.join(tmpDir, subPath);
           await copy(src, dest);
         } finally {

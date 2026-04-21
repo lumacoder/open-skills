@@ -210,10 +210,11 @@
       ],
       "origin": {
         "type": "github",
-        "ref": "peterskoett/self-improving-agent"
+        "ref": "peterskoett/self-improving-agent",
+        "refName": "master"
       },
       "author": "peterskoett",
-      "version": "main",
+      "version": "1.0.0",
       "license": "MIT"
     },
     {

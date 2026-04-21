@@ -6,6 +6,7 @@ import type { InstallScope, SkillMeta, InstallResult } from '../types/index.js';
 import { transformSkillContent } from './transformer.js';
 import { cleanDirectory } from './cleaner.js';
 import { mkdtemp, readFile, remove } from './fs-utils.js';
+import { cloneWithResolvedRef } from './git-utils.js';
 
 export class Engine {
   async process(
@@ -59,7 +60,7 @@ export class Engine {
     if (!subPath) {
       const tmpDir = await mkdtemp(path.join(os.tmpdir(), 'open-skills-'));
       try {
-        await git.clone(url, tmpDir, ['--depth', '1', '--branch', ref]);
+        await cloneWithResolvedRef(url, tmpDir, { ref });
         return await readFile(path.join(tmpDir, 'SKILL.md'), 'utf-8');
       } finally {
         await remove(tmpDir);
@@ -68,11 +69,11 @@ export class Engine {
 
     const tmpDir = await mkdtemp(path.join(os.tmpdir(), 'open-skills-'));
     try {
-      await git.clone(url, tmpDir, ['--depth', '1', '--branch', ref, '--no-checkout']);
+      const resolvedRef = await cloneWithResolvedRef(url, tmpDir, { ref, noCheckout: true });
       const repoGit = simpleGit(tmpDir);
       await repoGit.raw(['sparse-checkout', 'init', '--cone']);
       await repoGit.raw(['sparse-checkout', 'set', subPath]);
-      await repoGit.checkout(ref);
+      await repoGit.checkout(resolvedRef);
       return await readFile(path.join(tmpDir, subPath, 'SKILL.md'), 'utf-8');
     } finally {
       await remove(tmpDir);
