@@ -1,0 +1,2 @@
+; 复制此文件为 .npmrc 并填入你的 npm access token，然后运行 npm run release
+//registry.npmjs.org/:_authToken=${NPM_TOKEN}

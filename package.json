@@ -19,7 +19,8 @@
     "lint": "tsc --noEmit",
     "validate-registry": "tsx scripts/validate-registry.ts",
     "test": "vitest",
-    "prepublishOnly": "npm run lint && npm run build && npm run validate-registry"
+    "prepublishOnly": "npm run lint && npm run build && npm run validate-registry",
+    "release": "npm run prepublishOnly && npm publish --access public"
   },
   "publishConfig": {
     "access": "public"
@@ -40,7 +41,7 @@
     "opencode",
     "cli"
   ],
-  "author": "lumacoder",
+  "author": "manocoder",
   "license": "MIT",
   "dependencies": {
     "@inquirer/prompts": "^7.10.1",

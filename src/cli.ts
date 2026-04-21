@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 import { installCommand } from './commands/install.js';
 import { listCommand } from './commands/list.js';
 import { searchCommand } from './commands/search.js';

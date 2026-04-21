@@ -6,6 +6,9 @@ export default defineConfig({
   target: 'node18',
   clean: true,
   outDir: 'dist',
+  banner: {
+    js: '#!/usr/bin/env node',
+  },
   loader: {
     '.ts': 'tsx',
   },
