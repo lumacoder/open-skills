@@ -74,8 +74,14 @@ export class Engine {
   private async downloadSkill(skill: SkillMeta): Promise<string> {
     if (skill.source) {
       if (skill.source.type === 'git') {
+        if (!skill.source.url) {
+          throw new Error(`Skill "${skill.name}" has empty git source url`);
+        }
         return await this.downloadFromGit(skill);
       } else if (skill.source.type === 'local') {
+        if (!skill.source.url) {
+          throw new Error(`Skill "${skill.name}" has empty local source path`);
+        }
         return await readFile(skill.source.url, 'utf-8');
       } else {
         throw new Error(`Unsupported source type: ${skill.source.type}`);

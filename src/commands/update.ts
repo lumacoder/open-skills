@@ -50,7 +50,7 @@ export async function updateCommand() {
       }
 
       if (toUpdate.length > 0) {
-        results.push({ editor: preset.name, scope, skills: toUpdate });
+        results.push({ editor: preset.id, scope, skills: toUpdate });
       }
     }
   }
@@ -69,7 +69,7 @@ export async function updateCommand() {
   console.log('\n正在执行更新...\n');
   const engine = new Engine();
   for (const r of results) {
-    const preset = editorPresets.find((p) => p.name === r.editor)!;
+    const preset = editorPresets.find((p) => p.id === r.editor)!;
     const adapter = createAdapter(preset);
     const res = await engine.process(adapter, r.scope, r.skills);
     const success = res.filter((x) => x.success).length;

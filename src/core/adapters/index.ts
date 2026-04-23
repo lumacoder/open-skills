@@ -8,6 +8,8 @@ import { ClineAdapter } from './cline-adapter.js';
 import { RooClineAdapter } from './roo-cline-adapter.js';
 import { AntigravityAdapter } from './antigravity-adapter.js';
 import { CursorSkillsAdapter } from './cursor-skills-adapter.js';
+import { MarkerPluginAdapter } from './marker-plugin-adapter.js';
+import { PlainFileAdapter } from './plain-file-adapter.js';
 
 export function createAdapter(preset: EditorPreset): BaseAdapter {
   switch (preset.id) {
@@ -29,8 +31,18 @@ export function createAdapter(preset: EditorPreset): BaseAdapter {
       return new AntigravityAdapter(preset);
     case 'github-copilot':
       return new ClaudeAdapter(preset);
-    default:
-      throw new Error(`Unknown editor preset: ${preset.id}`);
+    default: {
+      const outputMode = preset.outputMode || (preset.type === 'file' ? 'marker-file' : 'directory');
+      if (outputMode === 'plain-file') {
+        return new PlainFileAdapter(preset);
+      }
+
+      if (outputMode === 'directory' || preset.type === 'directory') {
+        return new ClaudeAdapter(preset);
+      }
+
+      return new MarkerPluginAdapter(preset, preset.headerTemplate);
+    }
   }
 }
 
@@ -43,3 +55,5 @@ export * from './cline-adapter.js';
 export * from './roo-cline-adapter.js';
 export * from './antigravity-adapter.js';
 export * from './cursor-skills-adapter.js';
+export * from './marker-plugin-adapter.js';
+export * from './plain-file-adapter.js';

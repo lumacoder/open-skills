@@ -108,6 +108,8 @@ export interface InstallResult {
   targetPath: string;
 }
 
+export type EditorOutputMode = 'directory' | 'marker-file' | 'plain-file';
+
 export interface EditorPreset {
   id: string;
   name: string;
@@ -115,6 +117,9 @@ export interface EditorPreset {
   type: 'file' | 'directory';
   defaultEnabled: boolean;
   isSkillType: boolean;
+  outputMode?: EditorOutputMode;
+  headerTemplate?: string;
+  source?: 'builtin' | 'plugin';
 }
 
 export interface MarkerBlock {
