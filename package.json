@@ -1,6 +1,6 @@
 {
   "name": "open-skills",
-  "version": "2.1.0",
+  "version": "2.1.2",
   "description": "AI Agent Skill 分发与一键安装 CLI 工具",
   "main": "dist/cli.js",
   "bin": {
